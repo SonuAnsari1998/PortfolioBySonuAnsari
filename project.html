@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Projects – Sonu Ansari</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="style.css"/>
+
+  <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ================= HEADER ================= -->
+    <header class="header">
+        <div class="logo">Sonu Ansari</div>
+
+        <nav class="nav">
+            <a href="index.html" >Home</a>
+            <a href="about.html">About</a>
+            <a href="education.html">Education</a>
+            <a href="skill.html">Skills</a>
+            <a href="project.html" class="active">Projects</a>
+            <a href="contact.html">Contact</a>
+        </nav>
+    </header>
+
+<!-- HERO SECTION -->
+<section class="pj-hero">
+  <div class="pj-hero-label">My Work</div>
+  <h1>Featured <span>Projects</span></h1>
+  <p>Real-world applications built with Java, Spring Boot, Microservices & ReactJS — showcasing clean architecture and modern development practices.</p>
+</section>
+
+<!-- FILTER BUTTONS -->
+<div class="pj-filter-bar">
+  <button class="pj-filter-btn pj-filter-active">All</button>
+  <button class="pj-filter-btn">Full Stack</button>
+  <button class="pj-filter-btn">Backend</button>
+  <button class="pj-filter-btn">Frontend</button>
+</div>
+
+<!-- PROJECTS GRID -->
+<div class="pj-grid">
+
+  <!-- Project 1 -->
+  <div class="pj-card">
+    <div class="pj-banner pj-banner-blue">
+      <div class="pj-dots"></div>
+      <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="8" y="14" width="48" height="36" rx="4" stroke="currentColor" stroke-width="2.5"/>
+        <path d="M8 22h48" stroke="currentColor" stroke-width="2.5"/>
+        <circle cx="16" cy="18" r="2" fill="currentColor"/>
+        <circle cx="24" cy="18" r="2" fill="currentColor"/>
+        <path d="M20 34l6 6 14-12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <div class="pj-card-body">
+      <div class="pj-card-number">Project 01</div>
+      <div class="pj-card-title">Employee Management System</div>
+      <div class="pj-card-desc">A full-stack web app to manage employees — add, edit, delete, and view employee records with role-based access control and authentication.</div>
+      <div class="pj-tech-stack">
+        <span class="pj-tech-tag">Java</span>
+        <span class="pj-tech-tag">Spring Boot</span>
+        <span class="pj-tech-tag">ReactJS</span>
+        <span class="pj-tech-tag">MySQL</span>
+        <span class="pj-tech-tag">JWT</span>
+      </div>
+    </div>
+    <div class="pj-card-links">
+      <a href="#" class="pj-btn-github">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.2 11.39.6.11.82-.26.82-.58v-2.03c-3.34.73-4.04-1.61-4.04-1.61-.54-1.38-1.33-1.75-1.33-1.75-1.09-.74.08-.73.08-.73 1.2.09 1.84 1.24 1.84 1.24 1.07 1.83 2.81 1.3 3.5 1 .1-.78.42-1.3.76-1.6-2.66-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.12-.31-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 3-.4c1.02.01 2.04.14 3 .4 2.29-1.55 3.3-1.23 3.3-1.23.66 1.66.24 2.87.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.61-2.81 5.63-5.48 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.22.7.83.58C20.56 21.8 24 17.3 24 12c0-6.63-5.37-12-12-12z"/></svg>
+        GitHub
+      </a>
+      <a href="#" class="pj-btn-live">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        Live Demo
+      </a>
+    </div>
+  </div>
+
+  <!-- Project 2 -->
+  <div class="pj-card">
+    <div class="pj-banner pj-banner-green">
+      <div class="pj-dots"></div>
+      <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="32" cy="32" r="22" stroke="currentColor" stroke-width="2.5"/>
+        <path d="M32 10v44M10 32h44" stroke="currentColor" stroke-width="2.5"/>
+        <path d="M16 18c6 4 10 9 16 14 6-5 10-10 16-14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <path d="M16 46c6-4 10-9 16-14 6 5 10 10 16 14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div class="pj-card-body">
+      <div class="pj-card-number">Project 02</div>
+      <div class="pj-card-title">E-Commerce Microservices App</div>
+      <div class="pj-card-desc">A scalable e-commerce backend with independent microservices for products, orders, payments, and users — orchestrated with API Gateway and Eureka.</div>
+      <div class="pj-tech-stack">
+        <span class="pj-tech-tag">Spring Boot</span>
+        <span class="pj-tech-tag">Microservices</span>
+        <span class="pj-tech-tag">Eureka</span>
+        <span class="pj-tech-tag">Kafka</span>
+        <span class="pj-tech-tag">Docker</span>
+      </div>
+    </div>
+    <div class="pj-card-links">
+      <a href="#" class="pj-btn-github">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.2 11.39.6.11.82-.26.82-.58v-2.03c-3.34.73-4.04-1.61-4.04-1.61-.54-1.38-1.33-1.75-1.33-1.75-1.09-.74.08-.73.08-.73 1.2.09 1.84 1.24 1.84 1.24 1.07 1.83 2.81 1.3 3.5 1 .1-.78.42-1.3.76-1.6-2.66-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.12-.31-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 3-.4c1.02.01 2.04.14 3 .4 2.29-1.55 3.3-1.23 3.3-1.23.66 1.66.24 2.87.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.61-2.81 5.63-5.48 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.22.7.83.58C20.56 21.8 24 17.3 24 12c0-6.63-5.37-12-12-12z"/></svg>
+        GitHub
+      </a>
+      <a href="#" class="pj-btn-live">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        Live Demo
+      </a>
+    </div>
+  </div>
+
+  <!-- Project 3 -->
+  <div class="pj-card">
+    <div class="pj-banner pj-banner-purple">
+      <div class="pj-dots"></div>
+      <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="12" y="8" width="40" height="48" rx="4" stroke="currentColor" stroke-width="2.5"/>
+        <path d="M20 20h24M20 28h24M20 36h16" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+        <circle cx="44" cy="46" r="6" fill="currentColor" opacity="0.3" stroke="currentColor" stroke-width="2"/>
+        <path d="M42 46l2 2 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <div class="pj-card-body">
+      <div class="pj-card-number">Project 03</div>
+      <div class="pj-card-title">Blog & Content Management System</div>
+      <div class="pj-card-desc">A full-featured CMS with user authentication, rich text editor, categories, tags, and an admin dashboard for managing posts and users.</div>
+      <div class="pj-tech-stack">
+        <span class="pj-tech-tag">Java</span>
+        <span class="pj-tech-tag">Spring Boot</span>
+        <span class="pj-tech-tag">ReactJS</span>
+        <span class="pj-tech-tag">PostgreSQL</span>
+        <span class="pj-tech-tag">REST API</span>
+      </div>
+    </div>
+    <div class="pj-card-links">
+      <a href="#" class="pj-btn-github">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.2 11.39.6.11.82-.26.82-.58v-2.03c-3.34.73-4.04-1.61-4.04-1.61-.54-1.38-1.33-1.75-1.33-1.75-1.09-.74.08-.73.08-.73 1.2.09 1.84 1.24 1.84 1.24 1.07 1.83 2.81 1.3 3.5 1 .1-.78.42-1.3.76-1.6-2.66-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.12-.31-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 3-.4c1.02.01 2.04.14 3 .4 2.29-1.55 3.3-1.23 3.3-1.23.66 1.66.24 2.87.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.61-2.81 5.63-5.48 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.22.7.83.58C20.56 21.8 24 17.3 24 12c0-6.63-5.37-12-12-12z"/></svg>
+        GitHub
+      </a>
+      <a href="#" class="pj-btn-live">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        Live Demo
+      </a>
+    </div>
+  </div>
+
+
+
+</div>
+
+<!-- FOOTER -->
+<footer class="pj-footer">
+  Made with ❤️ by <span>Sonu Ansari</span> &nbsp;|&nbsp; Java Full Stack Developer
+</footer>
+
+    <!-- Custom Cursor -->
+<div class="cursor"></div>
+<div class="cursor-follower"></div>
+<div id="cursor-particles"></div>
+
+<!-- JS link -->
+<script src="script.js"></script>
+</body>
+
+    <!-- JavaScript -->
+    <script src="script.js"></script>
+
+<script src="projects.js"></script>
+</body>
+</html>
