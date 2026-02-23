@@ -12,9 +12,24 @@
 
     <!-- CSS -->
     <link rel="stylesheet" href="style.css">
+
+  <!-- EmailJS -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script>
+    emailjs.init("u2gQjNJGuRIJUGgj2");
+  </script>
 </head>
 <body>
 
+  <style>
+    /* @media (orientation: portrait){ */
+      /* nav{
+        display: flex;
+        flex-direction: column;
+
+      } */
+    /* } */
+  </style>
  <!-- ================= HEADER ================= -->
     <header class="header">
         <div class="logo">Sonu Ansari</div>
@@ -144,8 +159,8 @@
           Send Message
         </button>
 
-        <div class="ct-success-msg" id="ct-successMsg">
-          ✅ Message sent successfully! I'll get back to you soon.
+        <div id="ct-errorMsg" style="display:none; color:#e74c3c; margin-top:12px; font-size:14px;">
+          ❌ Failed to send message. Please try again or email me directly.
         </div>
       </form>
     </div>
@@ -158,6 +173,7 @@
   Made with ❤️ by <span>Sonu Ansari</span> &nbsp;|&nbsp; Java Full Stack Developer
 </footer>
 
+    <!-- Custom Curs
     <!-- Custom Cursor -->
 <div class="cursor"></div>
 <div class="cursor-follower"></div>
@@ -165,9 +181,118 @@
 
 <!-- JS link -->
 <script src="script.js"></script>
-</body>
 
-    <!-- JavaScript -->
-    <script src="script.js"></script>
+<!-- EmailJS Form Handler -->
+<script>
+  function attachFormListener() {
+    const form = document.getElementById("ct-contactForm");
+    if (form) form.addEventListener("submit", submitHandler);
+  }
+
+  function submitHandler(e) {
+    e.preventDefault();
+
+    const btn = this.querySelector(".ct-submit-btn");
+    const errorMsg = document.getElementById("ct-errorMsg");
+
+    btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Sending...`;
+    btn.disabled = true;
+    if (errorMsg) errorMsg.style.display = "none";
+
+    const templateParams = {
+      name:    document.getElementById("ct-name").value,
+      email:   document.getElementById("ct-email").value,
+      subject: document.getElementById("ct-subject").value,
+      message: document.getElementById("ct-message").value,
+    };
+
+    const userName = templateParams.name;
+    const formCard = document.querySelector(".ct-form-card");
+    const originalHTML = formCard.innerHTML;
+
+    emailjs.send("service_qlnxond", "template_pgb22bb", templateParams)
+      .then(function() {
+        formCard.innerHTML = `
+          <div id="ct-successCard" style="
+            background: rgba(255,255,255,0.03);
+            backdrop-filter: blur(10px);
+            border-radius: 14px;
+            padding: 28px 24px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: opacity 0.6s ease;
+            opacity: 0;
+          ">
+            <div style="
+              width: 60px; height: 60px;
+              border-radius: 50%;
+              border: 2px solid transparent;
+              background: linear-gradient(#0d1b2a, #0d1b2a) padding-box,
+                          linear-gradient(135deg, #00d4ff, #a855f7) border-box;
+              display: flex; align-items: center; justify-content: center;
+              margin: 0 auto 14px; font-size: 26px;
+            ">💌</div>
+
+            <h2 style="
+              font-size: 20px; font-weight: 700;
+              background: linear-gradient(90deg, #00d4ff, #a855f7);
+              -webkit-background-clip: text;
+              -webkit-text-fill-color: transparent;
+              margin-bottom: 8px;
+            ">Message Sent!</h2>
+
+            <p style="color:#888; font-size:13px; line-height:1.7; margin-bottom:10px;">
+              Thank you <strong style="color:#fff; -webkit-text-fill-color:#fff;">${userName}</strong>, your message has been delivered.
+              I'll get back to you within
+              <strong style="color:#00d4ff; -webkit-text-fill-color:#00d4ff;">24 hours!</strong>
+            </p>
+
+            <p style="color:#aaa; font-size:12px; margin-bottom:16px;">
+              Form will return in <span id="ct-countdown" style="color:#a855f7; font-weight:700;">30</span> seconds...
+            </p>
+
+            <button onclick="ct_showForm()" style="
+              background: linear-gradient(135deg, #00d4ff, #a855f7);
+              color:#fff; border:none;
+              padding:10px 24px; border-radius:8px;
+              font-size:13px; font-weight:600;
+              cursor:pointer; font-family:'Poppins',sans-serif;
+            ">Send Another Message</button>
+          </div>
+        `;
+
+        // Fade in
+        setTimeout(() => { document.getElementById("ct-successCard").style.opacity = "1"; }, 50);
+
+        // Countdown timer
+        let timeLeft = 30;
+        const timer = setInterval(() => {
+          timeLeft--;
+          const el = document.getElementById("ct-countdown");
+          if (el) el.textContent = timeLeft;
+          if (timeLeft <= 0) { clearInterval(timer); ct_showForm(); }
+        }, 1000);
+
+        // Show form back
+        window.ct_showForm = function() {
+          clearInterval(timer);
+          const card = document.getElementById("ct-successCard");
+          if (card) card.style.opacity = "0";
+          setTimeout(() => {
+            formCard.innerHTML = originalHTML;
+            attachFormListener();
+          }, 600);
+        };
+
+      }, function(error) {
+        btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Send Message`;
+        btn.disabled = false;
+        alert("❌ Failed to send. Please try again.");
+      });
+  }
+
+  attachFormListener();
+</script>
+
 </body>
 </html>
