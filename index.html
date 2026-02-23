@@ -4,22 +4,95 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Sonu Ansari - UI/UX Developer Portfolio">
+    <meta name="description" content="Sonu Ansari - Java Full Stack Developer Portfolio">
     <title>Sonu Ansari</title>
 
-    <!-- Google Font -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
-    <!-- CSS -->
     <link rel="stylesheet" href="style.css">
+
+    <style>
+        @keyframes orbitSpin    { from{transform:rotate(0deg)}   to{transform:rotate(360deg)} }
+        @keyframes orbitSpinRev { from{transform:rotate(360deg)} to{transform:rotate(0deg)} }
+        @keyframes dotPulse     { 0%,100%{opacity:1;transform:translateX(-50%) scale(1)} 50%{opacity:0.2;transform:translateX(-50%) scale(0.4)} }
+        @keyframes dotPulseY    { 0%,100%{opacity:1;transform:translateY(-50%) scale(1)} 50%{opacity:0.2;transform:translateY(-50%) scale(0.4)} }
+
+        .orbit-wrap {
+            position: absolute;
+            width: 100%; height: 100%;
+            top: 0; left: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .arc-ring {
+            position: absolute;
+            border-radius: 50%;
+        }
+
+        .arc-r1 {
+            width: 360px; height: 360px;
+            border: 2px solid transparent;
+            border-top-color: #38bdf8;
+            border-right-color: #38bdf8;
+            animation: orbitSpin 6s linear infinite;
+        }
+
+        .arc-r2 {
+            width: 330px; height: 330px;
+            border: 2px solid transparent;
+            border-bottom-color: #a855f7;
+            border-left-color: #a855f7;
+            animation: orbitSpinRev 4s linear infinite;
+        }
+
+        .arc-r3 {
+            width: 300px; height: 300px;
+            border: 2px solid transparent;
+            border-top-color: #f43f5e;
+            border-right-color: #f43f5e;
+            animation: orbitSpin 8s linear infinite;
+        }
+
+        .arc-dot {
+            position: absolute;
+            border-radius: 50%;
+            top: -6px;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: dotPulse 1.2s ease-in-out infinite;
+        }
+
+        .arc-r1 .arc-dot {
+            width: 12px; height: 12px;
+            background: #38bdf8;
+            box-shadow: 0 0 10px #38bdf8, 0 0 20px #38bdf8;
+        }
+
+        .arc-r2 .arc-dot {
+            width: 10px; height: 10px;
+            background: #a855f7;
+            box-shadow: 0 0 10px #a855f7, 0 0 20px #a855f7;
+            top: auto; bottom: -5px;
+            animation-delay: 0.4s;
+        }
+
+        .arc-r3 .arc-dot {
+            width: 10px; height: 10px;
+            background: #f43f5e;
+            box-shadow: 0 0 10px #f43f5e, 0 0 20px #f43f5e;
+            top: 50%; left: -5px;
+            transform: translateY(-50%);
+            animation: dotPulseY 1.2s ease-in-out infinite;
+            animation-delay: 0.8s;
+        }
+    </style>
 </head>
 
 <body>
 
-    <!-- ================= HEADER ================= -->
     <header class="header">
         <div class="logo">Sonu Ansari</div>
-
         <nav class="nav">
             <a href="index.html" class="active">Home</a>
             <a href="about.html">About</a>
@@ -30,69 +103,52 @@
         </nav>
     </header>
 
-    <!-- ================= HERO SECTION ================= -->
     <section class="hero">
 
-        <!-- Left Content -->
         <div class="hero-text">
-            <h1>
-                Hi, I'm <span>Sonu Ansari</span>
-            </h1>
-
+            <h1>Hi, I'm <span>Sonu Ansari</span></h1>
             <h3 class="subtitle"></h3>
-
             <p>
-                I am a Java Full Stack Developer with 1.6 years of experience as an Assistant Programmer, 
+                I am a Java Full Stack Developer with 1.6 years of experience as an Assistant Programmer,
                 building scalable, secure, and high-performance web applications. Skilled in Java, Spring Boot,
-                 Microservices, and modern front-end technologies like ReactJS, I focus on delivering clean 
-                 architecture, efficient code, and seamless user experiences. Committed to writing maintainable
-                  solutions that drive business value and long-term growth.
+                Microservices, and modern front-end technologies like ReactJS, I focus on delivering clean
+                architecture, efficient code, and seamless user experiences. Committed to writing maintainable
+                solutions that drive business value and long-term growth.
             </p>
 
             <div class="hero-buttons">
-                <a href="Sonu_Ansari_Resume.pdf" download class="btn primary">
-                    Download CV
-                </a>
-
-                <a href="contact.html" class="btn secondary">
-                    Hire Me
-                </a>
+                <a href="Sonu_Ansari_Resume.pdf" download class="btn primary">Download CV</a>
+                <a href="contact.html" class="btn secondary">Hire Me</a>
             </div>
 
-            <!-- Social Links -->
             <div class="social-links">
-               <a href="https://www.linkedin.com/in/sonuansari/" target="_blank">LinkedIn</a>
+                <a href="https://www.linkedin.com/in/sonuansari/" target="_blank">LinkedIn</a>
                 <a href="https://github.com/SonuAnsari1998" target="_blank">GitHub</a>
                 <a href="mailto:786sonuansari123@gmail.com?subject=Hello%20Sonu&body=I%20want%20to%20contact%20you" target="_blank" rel="noopener noreferrer">Gmail</a>
-                
             </div>
         </div>
 
-        <!-- Right Image -->
         <div class="hero-image">
             <div class="image-wrapper">
+                <div class="orbit-wrap">
+                    <div class="arc-ring arc-r1"><span class="arc-dot"></span></div>
+                    <div class="arc-ring arc-r2"><span class="arc-dot"></span></div>
+                    <div class="arc-ring arc-r3"><span class="arc-dot"></span></div>
+                </div>
                 <img src="profile image.jpg" alt="Sonu Ansari Profile Image">
             </div>
         </div>
 
     </section>
 
-    <!-- ================= FOOTER ================= -->
     <footer class="footer">
         Made with ❤️ by <span>Sonu Ansari</span> &nbsp;|&nbsp; Java Full Stack Developer
     </footer>
 
-    <!-- Custom Cursor -->
-<div class="cursor"></div>
-<div class="cursor-follower"></div>
-<div id="cursor-particles"></div>
+    <div class="cursor"></div>
+    <div class="cursor-follower"></div>
+    <div id="cursor-particles"></div>
 
-<!-- JS link -->
-<script src="script.js"></script>
-</body>
-
-    <!-- JavaScript -->
     <script src="script.js"></script>
 </body>
-
 </html>
