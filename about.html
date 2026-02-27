@@ -9,14 +9,407 @@
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+
+    <style>
+        /* ===== ORIGINAL ORBIT ===== */
+        @keyframes orbitSpin    { from{transform:rotate(0deg)}   to{transform:rotate(360deg)} }
+        @keyframes orbitSpinRev { from{transform:rotate(360deg)} to{transform:rotate(0deg)} }
+        @keyframes dotPulse     { 0%,100%{opacity:1;transform:translateX(-50%) scale(1)} 50%{opacity:0.2;transform:translateX(-50%) scale(0.4)} }
+        @keyframes dotPulseY    { 0%,100%{opacity:1;transform:translateY(-50%) scale(1)} 50%{opacity:0.2;transform:translateY(-50%) scale(0.4)} }
+        @keyframes glowPulse    { 0%,100%{box-shadow:0 0 30px rgba(56,189,248,0.2),0 0 60px rgba(168,85,247,0.1)} 50%{box-shadow:0 0 80px rgba(56,189,248,0.7),0 0 140px rgba(168,85,247,0.5)} }
+
+        /* ===== ENTRY ANIMATIONS ===== */
+        @keyframes slideInLeft {
+            from { opacity:0; transform:translateX(-60px); }
+            to   { opacity:1; transform:translateX(0); }
+        }
+        @keyframes slideInRight {
+            from { opacity:0; transform:translateX(60px); }
+            to   { opacity:1; transform:translateX(0); }
+        }
+        @keyframes fadeInUp {
+            from { opacity:0; transform:translateY(30px); }
+            to   { opacity:1; transform:translateY(0); }
+        }
+        @keyframes glowText {
+            0%,100% { text-shadow: 0 0 10px rgba(56,189,248,0.5); }
+            50%      { text-shadow: 0 0 30px rgba(56,189,248,1), 0 0 60px rgba(168,85,247,0.8); }
+        }
+        @keyframes borderGlow {
+            0%,100% { border-color: rgba(56,189,248,0.15); }
+            50%      { border-color: rgba(168,85,247,0.5); }
+        }
+        @keyframes scanLine {
+            0%   { top: -5%; }
+            100% { top: 105%; }
+        }
+        @keyframes statCount {
+            from { opacity:0; transform:translateY(20px) scale(0.8); }
+            to   { opacity:1; transform:translateY(0) scale(1); }
+        }
+        @keyframes dragPulse {
+            0%,100%{opacity:0.5;transform:translateX(-50%) scale(1)}
+            50%{opacity:1;transform:translateX(-50%) scale(1.04)}
+        }
+
+        /* ===== BASE ===== */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body {
+            overflow-x: hidden;
+            background: #020617;
+            font-family: 'Poppins', sans-serif;
+        }
+        body { cursor: crosshair; }
+
+        /* ===== 3D CANVAS ===== */
+        #three-canvas {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        #skill-tags {
+            position: fixed;
+            inset: 0;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        /* ===== CUSTOM CURSOR ===== */
+        #custom-cursor {
+            position: fixed;
+            width: 20px; height: 20px;
+            border: 2px solid #38bdf8;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            mix-blend-mode: screen;
+            transform: translate(-50%, -50%);
+            transition: width 0.2s, height 0.2s, border-color 0.2s, background 0.2s;
+        }
+        #custom-cursor.grab     { width:28px; height:28px; border-color:#a855f7; background:rgba(168,85,247,0.1); }
+        #custom-cursor.grabbing { width:22px; height:22px; border-color:#f43f5e; background:rgba(244,63,94,0.15); }
+
+        /* ===== DRAG HINT ===== */
+        #drag-hint {
+            position: fixed;
+            bottom: 58px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(168,85,247,0.6);
+            font-size: 11px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            z-index: 20;
+            pointer-events: none;
+            animation: dragPulse 2.5s ease-in-out infinite;
+        }
+        #ripple-hint {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(56,189,248,0.4);
+            font-size: 11px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            z-index: 20;
+            pointer-events: none;
+            animation: fadeInUp 1s ease 2s both;
+        }
+
+        /* ===== SKILL TAGS ===== */
+        .skill-tag {
+            position: absolute;
+            background: rgba(56,189,248,0.08);
+            border: 1px solid rgba(56,189,248,0.25);
+            color: rgba(56,189,248,0.7);
+            font-size: 11px;
+            font-family: 'Poppins', monospace;
+            padding: 4px 10px;
+            border-radius: 20px;
+            backdrop-filter: blur(4px);
+            white-space: nowrap;
+            animation: skillFloat linear infinite;
+            opacity: 0;
+        }
+        @keyframes skillFloat {
+            0%   { opacity:0; transform: translateY(0) scale(0.8); }
+            10%  { opacity:0.8; }
+            90%  { opacity:0.8; }
+            100% { opacity:0; transform: translateY(-100vh) scale(1.1); }
+        }
+
+        /* ===== CONTENT LAYER ===== */
+        .header, .about, .footer {
+            position: relative;
+            z-index: 10;
+        }
+
+        /* ===== HEADER GLASS — FIXED ===== */
+        .header {
+            position: fixed !important;
+            top: 0 !important; left: 0 !important; right: 0 !important;
+            z-index: 1000 !important;
+            background: rgba(2,6,23,0.6) !important;
+            backdrop-filter: blur(12px) !important;
+            -webkit-backdrop-filter: blur(12px) !important;
+            border-bottom: 1px solid rgba(56,189,248,0.1) !important;
+            transition: background 0.3s ease, box-shadow 0.3s ease, padding 0.3s ease !important;
+        }
+        .header.scrolled {
+            background: rgba(2,6,23,0.92) !important;
+            box-shadow: 0 4px 30px rgba(56,189,248,0.15) !important;
+            border-bottom: 1px solid rgba(56,189,248,0.25) !important;
+        }
+
+        /* ===== ABOUT SECTION ===== */
+        .about {
+            min-height: 100vh;
+            padding: 100px 40px 60px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 60px;
+        }
+
+        .about-container {
+            display: flex;
+            align-items: center;
+            gap: 60px;
+            max-width: 1100px;
+            width: 100%;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        /* ===== DRAGGABLE ===== */
+        .draggable {
+            cursor: grab;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        .draggable.is-dragging {
+            cursor: grabbing !important;
+            z-index: 600 !important;
+            opacity: 0.92;
+        }
+
+        /* Drag handle dots */
+        .drag-handle {
+            position: absolute;
+            top: 10px; right: 12px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2.5px;
+            width: 14px;
+            opacity: 0;
+            transition: opacity 0.2s;
+            z-index: 5;
+            pointer-events: none;
+        }
+        .drag-handle span {
+            width: 3px; height: 3px;
+            border-radius: 50%;
+            background: rgba(56,189,248,0.6);
+            display: block;
+        }
+        .draggable:hover .drag-handle { opacity: 1; }
+
+        /* ===== ABOUT IMAGE (Left) ===== */
+        .about-image {
+            flex: 0 0 auto;
+            position: relative;
+            animation: slideInLeft 1s ease 0.3s both;
+        }
+
+        .about-image img {
+            width: 280px;
+            height: 320px;
+            object-fit: cover;
+            border-radius: 20px;
+            border: 2px solid rgba(56,189,248,0.3);
+            box-shadow: 0 0 40px rgba(56,189,248,0.2), 0 0 80px rgba(168,85,247,0.1);
+            animation: glowPulse 4s ease-in-out infinite;
+            display: block;
+        }
+
+        /* ===== ABOUT CONTENT (Right) — Glass Card ===== */
+        .about-content {
+            flex: 1;
+            min-width: 300px;
+            background: rgba(2, 6, 23, 0.55);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(56,189,248,0.15);
+            border-radius: 24px;
+            padding: 40px 44px;
+            position: relative;
+            overflow: hidden;
+            animation: slideInRight 1s ease 0.4s both, borderGlow 4s ease-in-out infinite 1s;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.45);
+        }
+
+        /* Scan line */
+        .about-content::before {
+            content: '';
+            position: absolute;
+            left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(56,189,248,0.4), transparent);
+            animation: scanLine 4s linear infinite;
+            z-index: 1;
+        }
+
+        /* Corner decoration */
+        .about-content::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 60px; height: 60px;
+            border-top: 2px solid #38bdf8;
+            border-left: 2px solid #38bdf8;
+            border-radius: 24px 0 0 0;
+            opacity: 0.7;
+        }
+
+        .about-content h1 {
+            color: #fff;
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin: 0 0 16px;
+            animation: fadeInUp 1s ease 0.5s both;
+        }
+
+        .about-content h1 span,
+        .about-content h3 {
+            color: #38bdf8;
+            animation: glowText 3s ease-in-out infinite;
+        }
+
+        .about-content p {
+            color: rgba(255,255,255,0.75);
+            font-size: 0.93rem;
+            line-height: 1.8;
+            margin-bottom: 16px;
+            animation: fadeInUp 1s ease 0.6s both;
+        }
+
+        .about-content p strong,
+        .about-content p b {
+            color: #38bdf8;
+        }
+
+        .about-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px 24px;
+            margin: 20px 0 28px;
+            animation: fadeInUp 1s ease 0.7s both;
+        }
+
+        .about-info div {
+            color: rgba(255,255,255,0.7);
+            font-size: 0.88rem;
+        }
+
+        .about-info div span {
+            color: #38bdf8;
+            font-weight: 600;
+            margin-right: 6px;
+        }
+
+        .about-content .btn {
+            animation: fadeInUp 1s ease 0.8s both;
+        }
+
+        /* ===== STATS ===== */
+        .about-stats {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+            animation: fadeInUp 1s ease 0.9s both;
+        }
+
+        .stat-box {
+            background: rgba(2, 6, 23, 0.55);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(56,189,248,0.2);
+            border-radius: 20px;
+            padding: 30px 50px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            animation: statCount 1s ease both, borderGlow 4s ease-in-out infinite;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.45);
+        }
+
+        .stat-box:nth-child(1) { animation-delay: 1s; }
+        .stat-box:nth-child(2) { animation-delay: 1.2s; }
+        .stat-box:nth-child(3) { animation-delay: 1.4s; }
+
+        .stat-box:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 0 40px rgba(56,189,248,0.3), 0 0 80px rgba(168,85,247,0.15);
+        }
+
+        .stat-box::before {
+            content: '';
+            position: absolute;
+            left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(56,189,248,0.4), transparent);
+            animation: scanLine 5s linear infinite;
+        }
+
+        .stat-box h2 {
+            color: #38bdf8;
+            font-size: 2.6rem;
+            font-weight: 700;
+            margin: 0 0 8px;
+            animation: glowText 3s ease-in-out infinite;
+        }
+
+        .stat-box p {
+            color: rgba(255,255,255,0.65);
+            font-size: 0.9rem;
+            margin: 0;
+        }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            background: rgba(2,6,23,0.7) !important;
+            border-top: 1px solid rgba(56,189,248,0.1) !important;
+            backdrop-filter: blur(12px) !important;
+        }
+
+        @media (max-width: 768px) {
+            .about { padding: 80px 20px 40px; }
+            .about-container { flex-direction: column; gap: 30px; }
+            .about-image img { width: 220px; height: 250px; }
+            .about-content { padding: 28px 24px; }
+            .about-info { grid-template-columns: 1fr; }
+            .stat-box { padding: 24px 36px; }
+        }
+    </style>
 </head>
 
 <body>
 
+    <canvas id="three-canvas"></canvas>
+    <div id="skill-tags"></div>
+    <div id="custom-cursor"></div>
+    <p id="ripple-hint">✦ click anywhere for ripple ✦</p>
+    <p id="drag-hint">⠿ drag cards · double-click to reset</p>
+
     <!-- HEADER -->
     <header class="header">
         <div class="logo">Sonu Ansari</div>
-
         <nav class="nav">
             <a href="index.html">Home</a>
             <a href="about.html" class="active">About</a>
@@ -32,21 +425,26 @@
 
         <div class="about-container">
 
-            <!-- Left Image -->
-            <div class="about-image">
+            <!-- Left Image — draggable -->
+            <div class="about-image draggable" id="drag-image">
+                <div class="drag-handle"><span></span><span></span><span></span><span></span><span></span><span></span></div>
                 <img src="About Image .png" alt="Sonu Ansari">
             </div>
 
-            <!-- Right Content -->
-            <div class="about-content">
+            <!-- Right Content — draggable -->
+            <div class="about-content draggable" id="drag-content">
+                <div class="drag-handle"><span></span><span></span><span></span><span></span><span></span><span></span></div>
                 <h1>About Me</h1>
 
                 <p>
-                    I'm <strong>Sonu Ansari</strong>,  an MCA graduate and aspiring Java Full Stack Developer skilled in building end-to-end web applications. I work with Spring Boot Microservices for back-end systems and ReactJS for responsive front-end interfaces. Passionate about clean code, modern frameworks, and best practices, I aim to deliver secure, scalable, and user-centric solutions.
+                    I'm <strong>Sonu Ansari</strong>, an MCA graduate and aspiring Java Full Stack Developer skilled in
+                    building end-to-end web applications. I work with Spring Boot Microservices for back-end systems and
+                    ReactJS for responsive front-end interfaces. Passionate about clean code, modern frameworks, and best
+                    practices, I aim to deliver secure, scalable, and user-centric solutions.
                 </p>
 
                 <p>
-                    <h3><b>Technical Skills</b></h3> 
+                    <h3><b>Technical Skills</b></h3>
                     <b>Front-end:</b> HTML, CSS, JavaScript, Bootstrap, ReactJS, Responsive UI <br>
                     <b>Back-end:</b> C, Core & Advanced Java, Spring, Spring Boot, Microservices<br>
                     <b>Database:</b> Oracle<br>
@@ -65,19 +463,20 @@
 
         </div>
 
-        <!-- Stats Section -->
+        <!-- Stats Section — each stat box draggable -->
         <div class="about-stats">
-            <div class="stat-box">
+            <div class="stat-box draggable" id="drag-stat1">
+                <div class="drag-handle"><span></span><span></span><span></span><span></span><span></span><span></span></div>
                 <h2>7+</h2>
                 <p>Projects Completed</p>
             </div>
-
-            <div class="stat-box">
+            <div class="stat-box draggable" id="drag-stat2">
+                <div class="drag-handle"><span></span><span></span><span></span><span></span><span></span><span></span></div>
                 <h2>1+</h2>
                 <p>Years Learning</p>
             </div>
-
-            <div class="stat-box">
+            <div class="stat-box draggable" id="drag-stat3">
+                <div class="drag-handle"><span></span><span></span><span></span><span></span><span></span><span></span></div>
                 <h2>100%</h2>
                 <p>Dedication</p>
             </div>
@@ -90,17 +489,311 @@
         Made with ❤️ by <span>Sonu Ansari</span> &nbsp;|&nbsp; Java Full Stack Developer
     </footer>
 
-       <!-- Custom Cursor -->
-<div class="cursor"></div>
-<div class="cursor-follower"></div>
-<div id="cursor-particles"></div>
-
-<!-- JS link -->
-<script src="script.js"></script>
-</body>
+    <div class="cursor"></div>
+    <div class="cursor-follower"></div>
+    <div id="cursor-particles"></div>
 
     <script src="script.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <script>
+    /* === HEADER SCROLL === */
+    window.addEventListener('scroll', function() {
+        document.querySelector('.header').classList.toggle('scrolled', window.scrollY > 30);
+    });
+
+    /* === CUSTOM CURSOR === */
+    var cur = document.getElementById('custom-cursor');
+    document.addEventListener('mousemove', function(e) {
+        cur.style.left = e.clientX + 'px';
+        cur.style.top  = e.clientY + 'px';
+    });
+
+    /* ============================================================
+       DRAG & DROP SYSTEM
+       - Mousedown on .draggable (not on inputs/buttons/links) starts drag
+       - Card becomes position:fixed, follows cursor smoothly
+       - Mouseup drops card at current position (stays there)
+       - Double-click resets card back to original flow position
+    ============================================================ */
+    (function() {
+        var dragging    = null;
+        var offsetX     = 0, offsetY = 0;
+        var origParent  = null, origNext = null;
+        var placeholder = null;
+
+        function nodrags(el) {
+            var tag = el.tagName.toLowerCase();
+            return ['input','textarea','button','a','select','label'].indexOf(tag) !== -1;
+        }
+
+        function makeDraggable(el) {
+            el.addEventListener('mousedown', function(e) {
+                if (nodrags(e.target)) return;
+                e.preventDefault();
+                e.stopPropagation();
+
+                var rect = el.getBoundingClientRect();
+                offsetX = e.clientX - rect.left;
+                offsetY = e.clientY - rect.top;
+
+                // Store original DOM position
+                origParent = el.parentNode;
+                origNext   = el.nextSibling;
+
+                // Create placeholder to maintain layout
+                placeholder = document.createElement('div');
+                placeholder.style.width        = rect.width  + 'px';
+                placeholder.style.height       = rect.height + 'px';
+                placeholder.style.opacity      = '0.15';
+                placeholder.style.border       = '2px dashed rgba(56,189,248,0.35)';
+                placeholder.style.borderRadius = '20px';
+                placeholder.style.flexShrink   = '0';
+                origParent.insertBefore(placeholder, origNext);
+
+                // Move card to body as fixed
+                document.body.appendChild(el);
+                el.style.position   = 'fixed';
+                el.style.left       = (e.clientX - offsetX) + 'px';
+                el.style.top        = (e.clientY - offsetY) + 'px';
+                el.style.width      = rect.width + 'px';
+                el.style.zIndex     = '600';
+                el.style.margin     = '0';
+                el.style.transition = 'box-shadow 0.1s, opacity 0.1s';
+                el.style.boxShadow  = '0 24px 60px rgba(56,189,248,0.4), 0 0 40px rgba(168,85,247,0.2)';
+                el.style.transform  = 'scale(1.03)';
+                el.classList.add('is-dragging');
+
+                cur.classList.add('grabbing');
+                document.body.style.userSelect = 'none';
+                dragging = el;
+            });
+
+            // Double-click to reset
+            el.addEventListener('dblclick', function(e) {
+                if (nodrags(e.target)) return;
+                if (el.style.position === 'fixed') {
+                    el.style.position  = '';
+                    el.style.left      = '';
+                    el.style.top       = '';
+                    el.style.width     = '';
+                    el.style.zIndex    = '';
+                    el.style.margin    = '';
+                    el.style.transform = '';
+                    el.style.boxShadow = '';
+                    el.style.transition= '';
+                    el.classList.remove('is-dragging');
+                }
+            });
+
+            // Hover cursor
+            el.addEventListener('mouseenter', function() {
+                if (!dragging) cur.classList.add('grab');
+            });
+            el.addEventListener('mouseleave', function() {
+                cur.classList.remove('grab');
+            });
+        }
+
+        document.addEventListener('mousemove', function(e) {
+            if (!dragging) return;
+            dragging.style.left = (e.clientX - offsetX) + 'px';
+            dragging.style.top  = (e.clientY - offsetY) + 'px';
+        });
+
+        document.addEventListener('mouseup', function() {
+            if (!dragging) return;
+
+            // Drop animation
+            dragging.style.transform  = 'scale(1)';
+            dragging.style.boxShadow  = '0 8px 32px rgba(56,189,248,0.2)';
+            dragging.style.transition = 'transform 0.2s, box-shadow 0.3s';
+
+            // Remove placeholder
+            if (placeholder && placeholder.parentNode) {
+                placeholder.parentNode.removeChild(placeholder);
+            }
+            placeholder = null;
+
+            dragging.classList.remove('is-dragging');
+            cur.classList.remove('grabbing');
+            document.body.style.userSelect = '';
+            dragging    = null;
+            origParent  = null;
+            origNext    = null;
+        });
+
+        // Init all draggable cards
+        document.querySelectorAll('.draggable').forEach(makeDraggable);
+    })();
+
+    /* === FLOATING SKILL TAGS === */
+    (function() {
+        var tags = ['Java','Spring Boot','React','Microservices','MySQL','REST API','Docker','Git','AWS','Redis','Kafka','Hibernate'];
+        var container = document.getElementById('skill-tags');
+        tags.forEach(function(tag, idx) {
+            var el = document.createElement('div');
+            el.className = 'skill-tag';
+            el.textContent = tag;
+            var dur = 14 + Math.random() * 10;
+            var del = idx * 1.8;
+            el.style.left             = (5 + Math.random() * 85) + '%';
+            el.style.bottom           = '-30px';
+            el.style.animationDuration = dur + 's';
+            el.style.animationDelay    = del + 's';
+            container.appendChild(el);
+        });
+    })();
+
+    /* ============================================================
+       MEGA 3D BACKGROUND
+    ============================================================ */
+    (function() {
+
+        var W = window.innerWidth, H = window.innerHeight;
+        var canvas = document.getElementById('three-canvas');
+
+        var renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: false });
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.setSize(W, H);
+        renderer.setClearColor(0x020617, 1);
+
+        var scene  = new THREE.Scene();
+        scene.fog  = new THREE.FogExp2(0x020617, 0.025);
+
+        var camera = new THREE.PerspectiveCamera(65, W / H, 0.1, 500);
+        camera.position.set(0, 1, 8);
+
+        var mouse     = { x: 0, y: 0 };
+        var camTarget = { x: 0, y: 0 };
+
+        document.addEventListener('mousemove', function(e) {
+            mouse.x = (e.clientX / W - 0.5) * 2;
+            mouse.y = (e.clientY / H - 0.5) * 2;
+        });
+
+        /* 1. GALAXY */
+        var gGeo = new THREE.BufferGeometry();
+        var gPos = new Float32Array(12000 * 3);
+        var gCol = new Float32Array(12000 * 3);
+        var cInner = new THREE.Color('#38bdf8'), cMid = new THREE.Color('#a855f7'), cOuter = new THREE.Color('#f43f5e');
+        for (var i = 0; i < 12000; i++) {
+            var i3 = i*3, r = Math.pow(Math.random(),0.5)*14+0.3, ang = (i%4)*(Math.PI*2/4)+r*0.55;
+            gPos[i3]=Math.cos(ang)*r+(Math.random()-0.5)*0.38*r; gPos[i3+1]=(Math.random()-0.5)*0.095; gPos[i3+2]=Math.sin(ang)*r+(Math.random()-0.5)*0.38*r;
+            var t=r/14.3, c=t<0.5?cInner.clone().lerp(cMid,t*2):cMid.clone().lerp(cOuter,(t-0.5)*2);
+            gCol[i3]=c.r; gCol[i3+1]=c.g; gCol[i3+2]=c.b;
+        }
+        gGeo.setAttribute('position',new THREE.BufferAttribute(gPos,3));
+        gGeo.setAttribute('color',new THREE.BufferAttribute(gCol,3));
+        var galaxy = new THREE.Points(gGeo, new THREE.PointsMaterial({size:0.06,vertexColors:true,transparent:true,opacity:0.9,depthWrite:false}));
+        galaxy.position.set(0,-4,-8); galaxy.rotation.x=0.25; scene.add(galaxy);
+
+        /* 2. STARFIELD */
+        var sPos = new Float32Array(15000*3);
+        for (var s=0;s<15000*3;s++) sPos[s]=(Math.random()-0.5)*300;
+        var sGeo = new THREE.BufferGeometry(); sGeo.setAttribute('position',new THREE.BufferAttribute(sPos,3));
+        var stars = new THREE.Points(sGeo,new THREE.PointsMaterial({color:0xffffff,size:0.06,transparent:true,opacity:0.75}));
+        scene.add(stars);
+
+        /* 3. CONSTELLATION */
+        var nodePositions=[];
+        for(var n=0;n<60;n++) nodePositions.push(new THREE.Vector3((Math.random()-0.5)*24,(Math.random()-0.5)*14,(Math.random()-0.5)*10-3));
+        var ndPos=new Float32Array(60*3);
+        for(var nd=0;nd<60;nd++){ndPos[nd*3]=nodePositions[nd].x;ndPos[nd*3+1]=nodePositions[nd].y;ndPos[nd*3+2]=nodePositions[nd].z;}
+        var ndGeo=new THREE.BufferGeometry(); ndGeo.setAttribute('position',new THREE.BufferAttribute(ndPos,3));
+        scene.add(new THREE.Points(ndGeo,new THREE.PointsMaterial({color:0x38bdf8,size:0.12,transparent:true,opacity:0.9})));
+        var lv=[];
+        for(var a=0;a<60;a++) for(var b=a+1;b<60;b++) if(nodePositions[a].distanceTo(nodePositions[b])<5.5){lv.push(nodePositions[a].x,nodePositions[a].y,nodePositions[a].z,nodePositions[b].x,nodePositions[b].y,nodePositions[b].z);}
+        var lGeo=new THREE.BufferGeometry(); lGeo.setAttribute('position',new THREE.BufferAttribute(new Float32Array(lv),3));
+        var constellationLines=new THREE.LineSegments(lGeo,new THREE.LineBasicMaterial({color:0x38bdf8,transparent:true,opacity:0.12}));
+        scene.add(constellationLines);
+
+        /* 4. DNA DOUBLE HELIX */
+        var stA=[],stB=[],rungs=[];
+        for(var d=0;d<120;d++){var dt=d/120,ang2=dt*Math.PI*8,yy=dt*10-5;stA.push(new THREE.Vector3(Math.cos(ang2),yy,Math.sin(ang2)));stB.push(new THREE.Vector3(Math.cos(ang2+Math.PI),yy,Math.sin(ang2+Math.PI)));if(d%8===0)rungs.push([stA[stA.length-1],stB[stB.length-1]]);}
+        function mkL(pts,col){var g=new THREE.BufferGeometry().setFromPoints(pts);return new THREE.Line(g,new THREE.LineBasicMaterial({color:col,transparent:true,opacity:0.7}));}
+        var dnaGroup=new THREE.Group(); dnaGroup.add(mkL(stA,0x38bdf8)); dnaGroup.add(mkL(stB,0xf43f5e));
+        rungs.forEach(function(r){var rg=new THREE.BufferGeometry().setFromPoints(r);dnaGroup.add(new THREE.Line(rg,new THREE.LineBasicMaterial({color:0xa855f7,transparent:true,opacity:0.5})));[0,1].forEach(function(idx){var sp=new THREE.Mesh(new THREE.SphereGeometry(0.06,8,8),new THREE.MeshBasicMaterial({color:idx===0?0x38bdf8:0xf43f5e}));sp.position.copy(r[idx]);dnaGroup.add(sp);});});
+        dnaGroup.position.set(-7,0,-2); scene.add(dnaGroup);
+
+        /* 5. WORMHOLE / PORTAL */
+        var portalGroup=new THREE.Group();
+        for(var ri=0;ri<18;ri++){var t2=ri/18,rSize=1.5-t2*0.9,rCol=new THREE.Color().setHSL(0.55+t2*0.25,1,0.55),rGeo=new THREE.TorusGeometry(rSize,0.015,8,60),rMesh=new THREE.Mesh(rGeo,new THREE.MeshBasicMaterial({color:rCol,transparent:true,opacity:0.7-t2*0.4}));rMesh.position.z=-t2*3.5;portalGroup.add(rMesh);}
+        portalGroup.position.set(7,1,-3); scene.add(portalGroup);
+
+        /* 6. FLOATING WIREFRAME SHAPES */
+        var shapes=[];
+        function mkWire(geo,col,x,y,z){var e=new THREE.EdgesGeometry(geo);var m=new THREE.LineSegments(e,new THREE.LineBasicMaterial({color:col,transparent:true,opacity:0.55}));m.position.set(x,y,z);scene.add(m);shapes.push(m);}
+        mkWire(new THREE.IcosahedronGeometry(1.4,1),0x38bdf8,0,1.5,-5);
+        mkWire(new THREE.TorusGeometry(1.0,0.25,16,60),0xa855f7,4.5,-1,-6);
+        mkWire(new THREE.OctahedronGeometry(1.1),0xf43f5e,-4.5,0.5,-5);
+        mkWire(new THREE.DodecahedronGeometry(0.7),0x22d3ee,3,3,-4);
+        mkWire(new THREE.IcosahedronGeometry(0.5,0),0x818cf8,-2.5,-2.5,-3);
+        mkWire(new THREE.TetrahedronGeometry(0.8),0xf9a8d4,0,-3,-4);
+
+        /* 7. GLOWING GRID */
+        var grid=new THREE.GridHelper(60,60,0x1e3a5f,0x0c1a36);
+        grid.material.transparent=true; grid.material.opacity=0.25; grid.position.y=-5; scene.add(grid);
+
+        /* 8. ORBITING LIGHTS */
+        var pt1=new THREE.PointLight(0x38bdf8,3,25); scene.add(pt1);
+        var pt2=new THREE.PointLight(0xa855f7,3,25); scene.add(pt2);
+        var pt3=new THREE.PointLight(0xf43f5e,2,20); scene.add(pt3);
+        scene.add(new THREE.AmbientLight(0x1a1a2e,0.4));
+
+        /* 9. CLICK RIPPLE */
+        var ripples=[];
+        function spawnRipple(wx,wy,wz){
+            var grp=new THREE.Group(); grp.position.set(wx,wy,wz); scene.add(grp);
+            var colors=[0x38bdf8,0xa855f7,0xf43f5e,0x22d3ee], rings=[];
+            for(var ri2=0;ri2<4;ri2++){var rg=new THREE.Mesh(new THREE.TorusGeometry(0.01,0.02,8,40),new THREE.MeshBasicMaterial({color:colors[ri2],transparent:true,opacity:1,side:THREE.DoubleSide}));rg.rotation.x=Math.PI*0.5;grp.add(rg);rings.push({mesh:rg,delay:ri2*0.06});}
+            var bPos=new Float32Array(60*3); for(var bi=0;bi<60;bi++){bPos[bi*3]=(Math.random()-0.5)*0.1;bPos[bi*3+1]=(Math.random()-0.5)*0.1;bPos[bi*3+2]=(Math.random()-0.5)*0.1;}
+            var bGeo=new THREE.BufferGeometry(); bGeo.setAttribute('position',new THREE.BufferAttribute(bPos,3));
+            var bMesh=new THREE.Points(bGeo,new THREE.PointsMaterial({color:0x38bdf8,size:0.08,transparent:true,opacity:1}));
+            grp.add(bMesh);
+            ripples.push({group:grp,rings:rings,burstMesh:bMesh,bPos:bPos,life:0,maxLife:1.2});
+        }
+        var rc=new THREE.Raycaster(), cp=new THREE.Plane(new THREE.Vector3(0,0,1),0), ct=new THREE.Vector3();
+        document.addEventListener('click',function(e){
+            var tag=e.target.tagName.toLowerCase();
+            if(['input','textarea','button','a','select','label'].indexOf(tag)!==-1) return;
+            var ndc=new THREE.Vector2((e.clientX/W)*2-1,-(e.clientY/H)*2+1);
+            rc.setFromCamera(ndc,camera); rc.ray.intersectPlane(cp,ct);
+            spawnRipple(ct.x,ct.y,ct.z);
+        });
+
+        /* ANIMATION LOOP */
+        var clock=new THREE.Clock(), rs=[0.20,0.15,0.25,0.35,0.40,0.28];
+        function animate(){
+            requestAnimationFrame(animate); var t=clock.getElapsedTime();
+            galaxy.rotation.y=t*0.03; stars.rotation.y=t*0.003;
+            constellationLines.material.opacity=0.08+Math.sin(t*0.7)*0.06;
+            dnaGroup.rotation.y=t*0.4; dnaGroup.position.y=Math.sin(t*0.5)*0.5;
+            portalGroup.rotation.z=t*0.25; portalGroup.rotation.y=t*0.1;
+            portalGroup.children.forEach(function(ring,ri){ring.rotation.z=t*(0.3+ri*0.05);ring.material.opacity=(0.4+Math.sin(t*1.5+ri*0.3)*0.3)*(1-ri/18);});
+            shapes.forEach(function(sh,i){sh.rotation.x=t*rs[i];sh.rotation.y=t*rs[i]*1.3;sh.position.y+=Math.sin(t*0.7+i)*0.003;});
+            pt1.position.set(Math.sin(t*0.5)*7,2,Math.cos(t*0.5)*7);
+            pt2.position.set(Math.cos(t*0.4)*7,-1,Math.sin(t*0.4)*7);
+            pt3.position.set(Math.sin(t*0.6)*5,Math.cos(t)*3,-2);
+            grid.position.y=-5+Math.sin(t*0.3)*0.15;
+            ripples=ripples.filter(function(rp){
+                rp.life+=0.016; var p=rp.life/rp.maxLife;
+                rp.rings.forEach(function(ring){var r2=Math.max(0,p-ring.delay/rp.maxLife);ring.mesh.scale.setScalar(1+r2*12);ring.mesh.material.opacity=Math.max(0,1-r2*1.2);});
+                var bArr=rp.burstMesh.geometry.attributes.position.array;
+                for(var bi=0;bi<bArr.length;bi+=3){bArr[bi]+=(Math.random()-0.5)*0.06*(1-p);bArr[bi+1]+=(Math.random()-0.5)*0.06*(1-p);bArr[bi+2]+=(Math.random()-0.5)*0.06*(1-p);}
+                rp.burstMesh.geometry.attributes.position.needsUpdate=true; rp.burstMesh.material.opacity=Math.max(0,1-p);
+                if(p>=1){scene.remove(rp.group);return false;} return true;
+            });
+            camTarget.x+=(mouse.x*1.2-camTarget.x)*0.05;
+            camTarget.y+=(-mouse.y*0.7-camTarget.y)*0.05;
+            camera.position.x=camTarget.x; camera.position.y=1+camTarget.y; camera.lookAt(0,0,0);
+            renderer.render(scene,camera);
+        }
+        animate();
+
+        window.addEventListener('resize',function(){W=window.innerWidth;H=window.innerHeight;camera.aspect=W/H;camera.updateProjectionMatrix();renderer.setSize(W,H);});
+    })();
+    </script>
 
 </body>
-
 </html>

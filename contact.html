@@ -1,41 +1,241 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Contact – Sonu Ansari</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="style.css"/>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Contact – Sonu Ansari</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="style.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script>emailjs.init("u2gQjNJGuRIJUGgj2");</script>
 
-  <!-- Google Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        @keyframes fadeInUp    { from{opacity:0;transform:translateY(40px)} to{opacity:1;transform:translateY(0)} }
+        @keyframes slideInDown { from{opacity:0;transform:translateY(-40px)} to{opacity:1;transform:translateY(0)} }
+        @keyframes glowText    { 0%,100%{text-shadow:0 0 10px rgba(56,189,248,0.5)} 50%{text-shadow:0 0 30px rgba(56,189,248,1),0 0 60px rgba(168,85,247,0.8)} }
+        @keyframes tagFloat    { 0%{opacity:0;transform:translateY(0) scale(0.8)} 10%{opacity:0.8} 90%{opacity:0.8} 100%{opacity:0;transform:translateY(-100vh) scale(1.1)} }
+        @keyframes scanLine    { 0%{top:-5%} 100%{top:105%} }
+        @keyframes iconPulse   { 0%,100%{transform:scale(1)} 50%{transform:scale(1.1)} }
+        @keyframes dragPulse   { 0%,100%{opacity:0.5;transform:translateX(-50%) scale(1)} 50%{opacity:1;transform:translateX(-50%) scale(1.04)} }
+        @keyframes dropFlash   { 0%{box-shadow:0 0 0 0 rgba(56,189,248,0.8)} 100%{box-shadow:0 0 40px 0 rgba(56,189,248,0)} }
 
-    <!-- CSS -->
-    <link rel="stylesheet" href="style.css">
+        *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+        html, body { overflow-x:hidden; background:#020617; font-family:'Poppins',sans-serif; color:#e2e8f0; min-height:100vh; }
+        body { cursor:crosshair; }
 
-  <!-- EmailJS -->
-  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-  <script>
-    emailjs.init("u2gQjNJGuRIJUGgj2");
-  </script>
+        #three-canvas { position:fixed; inset:0; z-index:0; pointer-events:none; }
+        #skill-tags   { position:fixed; inset:0; z-index:2; pointer-events:none; }
+        .skill-tag {
+            position:absolute; background:rgba(56,189,248,0.08); border:1px solid rgba(56,189,248,0.25);
+            color:rgba(56,189,248,0.7); font-size:11px; padding:4px 10px; border-radius:20px;
+            backdrop-filter:blur(4px); white-space:nowrap; animation:tagFloat linear infinite; opacity:0;
+        }
+
+        /* Custom cursor */
+        #custom-cursor {
+            position:fixed; width:20px; height:20px; border:2px solid #38bdf8; border-radius:50%;
+            pointer-events:none; z-index:9999; mix-blend-mode:screen;
+            transform:translate(-50%,-50%);
+            transition:width 0.2s, height 0.2s, border-color 0.2s, background 0.2s;
+        }
+        #custom-cursor.grab    { width:28px; height:28px; border-color:#a855f7; background:rgba(168,85,247,0.1); }
+        #custom-cursor.grabbing{ width:22px; height:22px; border-color:#f43f5e; background:rgba(244,63,94,0.15); }
+
+        /* Drag hint */
+        #drag-hint {
+            position:fixed; bottom:58px; left:50%; transform:translateX(-50%);
+            color:rgba(168,85,247,0.6); font-size:11px; letter-spacing:3px;
+            text-transform:uppercase; z-index:20; pointer-events:none;
+            animation:dragPulse 2.5s ease-in-out infinite;
+        }
+        #ripple-hint {
+            position:fixed; bottom:30px; left:50%; transform:translateX(-50%);
+            color:rgba(56,189,248,0.4); font-size:11px; letter-spacing:3px;
+            text-transform:uppercase; z-index:20; pointer-events:none;
+            animation:fadeInUp 1s ease 2s both;
+        }
+
+        /* Header */
+        .header {
+            position:fixed !important; top:0 !important; left:0 !important; right:0 !important;
+            z-index:1000 !important; background:rgba(2,6,23,0.6) !important;
+            backdrop-filter:blur(12px) !important; -webkit-backdrop-filter:blur(12px) !important;
+            border-bottom:1px solid rgba(56,189,248,0.1) !important;
+            transition:background 0.3s ease, box-shadow 0.3s ease !important;
+        }
+        .header.scrolled {
+            background:rgba(2,6,23,0.92) !important;
+            box-shadow:0 4px 30px rgba(56,189,248,0.15) !important;
+            border-bottom:1px solid rgba(56,189,248,0.25) !important;
+        }
+
+        /* Page */
+        .ct-page { position:relative; z-index:10; padding:88px 60px 20px; max-width:1200px; margin:0 auto; }
+
+        /* Hero */
+        .ct-hero {
+            text-align:center; margin-bottom:28px;
+            animation:slideInDown 1s ease 0.2s both;
+            background:rgba(4,12,40,0.65); backdrop-filter:blur(16px);
+            border-radius:20px; padding:22px 40px 18px;
+            border:1px solid rgba(56,189,248,0.15);
+        }
+        .ct-hero-label { font-size:0.7rem; letter-spacing:5px; text-transform:uppercase; color:#38bdf8; margin-bottom:8px; opacity:0.85; }
+        .ct-hero h1 {
+            font-size:clamp(1.8rem,3.5vw,2.8rem); font-weight:800; line-height:1.1;
+            background:linear-gradient(135deg,#e2e8f0 30%,#38bdf8 60%,#a855f7 100%);
+            -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+            animation:glowText 4s ease-in-out infinite;
+        }
+        .ct-hero h1 span { background:linear-gradient(135deg,#38bdf8,#a855f7); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+        .ct-title-line { width:60px; height:3px; background:linear-gradient(90deg,#38bdf8,#a855f7); margin:10px auto 12px; border-radius:2px; box-shadow:0 0 20px rgba(56,189,248,0.5); }
+        .ct-hero p { color:rgba(148,163,184,0.85); font-size:0.87rem; max-width:500px; margin:0 auto; line-height:1.65; }
+
+        /* Layout */
+        .ct-wrapper { display:grid; grid-template-columns:1fr 1.6fr; gap:22px; align-items:start; }
+
+        /* ── DRAGGABLE ── */
+        .draggable {
+            cursor:grab;
+            user-select:none;
+            -webkit-user-select:none;
+        }
+        .draggable.is-dragging {
+            cursor:grabbing !important;
+            z-index:600 !important;
+            opacity:0.92;
+        }
+        /* Drag handle dot */
+        .drag-handle {
+            position:absolute; top:10px; right:12px;
+            display:grid; grid-template-columns:1fr 1fr; gap:2.5px;
+            width:14px; opacity:0; transition:opacity 0.2s; z-index:5; pointer-events:none;
+        }
+        .drag-handle span { width:3px; height:3px; border-radius:50%; background:rgba(56,189,248,0.6); display:block; }
+        .draggable:hover .drag-handle { opacity:1; }
+
+        /* Info side */
+        .ct-info-side { display:flex; flex-direction:column; gap:12px; }
+
+        .ct-info-card {
+            background:rgba(4,12,40,0.88); backdrop-filter:blur(20px);
+            border:1px solid rgba(56,189,248,0.28); border-radius:18px;
+            padding:18px 22px; display:flex; align-items:center; gap:16px;
+            position:relative; overflow:hidden;
+            box-shadow:0 4px 24px rgba(0,0,0,0.45);
+            transition:border-color 0.3s, box-shadow 0.3s, transform 0.15s;
+        }
+        .ct-info-card::before {
+            content:''; position:absolute; left:0; right:0; height:2px;
+            background:linear-gradient(90deg,transparent,rgba(56,189,248,0.35),transparent);
+            animation:scanLine 5s linear infinite; top:0;
+        }
+        .ct-info-card:hover { border-color:rgba(56,189,248,0.5); box-shadow:0 8px 32px rgba(56,189,248,0.1); }
+
+        .ct-info-icon { width:46px; height:46px; border-radius:12px; display:flex; align-items:center; justify-content:center; flex-shrink:0; animation:iconPulse 3s ease-in-out infinite; }
+        .ct-info-icon svg { width:22px; height:22px; }
+        .ct-icon-email    { background:rgba(56,189,248,0.15); color:#38bdf8; border:1px solid rgba(56,189,248,0.3); }
+        .ct-icon-phone    { background:rgba(168,85,247,0.15); color:#a855f7; border:1px solid rgba(168,85,247,0.3); }
+        .ct-icon-location { background:rgba(244,63,94,0.15);  color:#f43f5e;  border:1px solid rgba(244,63,94,0.3); }
+
+        .ct-info-text { display:flex; flex-direction:column; gap:3px; min-width:0; }
+        .ct-info-label { font-size:0.67rem; text-transform:uppercase; letter-spacing:2px; color:rgba(148,163,184,0.55); }
+        .ct-info-value { font-size:0.84rem; font-weight:600; color:#cbd5e1; text-decoration:none; transition:color 0.3s; word-break:break-all; }
+        .ct-info-value:hover { color:#38bdf8; }
+
+        .ct-social-section {
+            background:rgba(4,12,40,0.88); backdrop-filter:blur(20px);
+            border:1px solid rgba(168,85,247,0.28); border-radius:18px;
+            padding:18px 22px; position:relative; overflow:hidden;
+            box-shadow:0 4px 24px rgba(0,0,0,0.45);
+        }
+        .ct-social-title { font-size:0.67rem; text-transform:uppercase; letter-spacing:3px; color:rgba(148,163,184,0.55); margin-bottom:12px; }
+        .ct-socials { display:flex; gap:8px; flex-wrap:wrap; }
+        .ct-social-btn {
+            display:flex; align-items:center; gap:7px;
+            background:rgba(2,6,23,0.7); border:1px solid rgba(56,189,248,0.2);
+            color:rgba(226,232,240,0.85); padding:8px 14px; border-radius:50px;
+            font-size:0.75rem; font-weight:600; text-decoration:none;
+            font-family:'Poppins',sans-serif;
+            transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+        }
+        .ct-social-btn svg { width:14px; height:14px; }
+        .ct-social-btn:hover { border-color:rgba(56,189,248,0.55); color:#38bdf8; transform:translateY(-3px); box-shadow:0 8px 24px rgba(56,189,248,0.2); }
+
+        /* Form card */
+        .ct-form-card {
+            background:rgba(4,12,40,0.92); backdrop-filter:blur(24px);
+            border:1px solid rgba(56,189,248,0.28); border-radius:22px;
+            padding:28px 30px; position:relative; overflow:hidden;
+            box-shadow:0 8px 40px rgba(0,0,0,0.55), 0 0 60px rgba(56,189,248,0.04);
+            transition:border-color 0.3s, box-shadow 0.3s, transform 0.15s;
+        }
+        .ct-form-card::before {
+            content:''; position:absolute; left:0; right:0; height:2px;
+            background:linear-gradient(90deg,transparent,rgba(56,189,248,0.4),transparent);
+            animation:scanLine 4s linear infinite; top:0;
+        }
+        .ct-form-card .corner-accent {
+            position:absolute; top:0; left:0; width:44px; height:44px;
+            border-top:2px solid rgba(56,189,248,0.55); border-left:2px solid rgba(56,189,248,0.55);
+            border-radius:22px 0 0 0; pointer-events:none;
+        }
+        .ct-form-title { font-size:1.25rem; font-weight:700; color:#e2e8f0; margin-bottom:4px; position:relative; z-index:2; }
+        .ct-form-subtitle { font-size:0.8rem; color:rgba(148,163,184,0.7); margin-bottom:20px; position:relative; z-index:2; }
+
+        .ct-form-row { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+        .ct-form-group { display:flex; flex-direction:column; gap:6px; margin-bottom:14px; position:relative; z-index:2; }
+        .ct-form-group label { font-size:0.7rem; font-weight:600; text-transform:uppercase; letter-spacing:1.5px; color:rgba(148,163,184,0.65); }
+        .ct-form-group input, .ct-form-group textarea {
+            background:rgba(2,6,23,0.88); border:1px solid rgba(56,189,248,0.3);
+            border-radius:12px; padding:11px 15px; color:#e2e8f0; font-size:0.875rem;
+            font-family:'Poppins',sans-serif; outline:none; width:100%;
+            transition:border-color 0.3s, box-shadow 0.3s; resize:none;
+        }
+        .ct-form-group input::placeholder, .ct-form-group textarea::placeholder { color:rgba(148,163,184,0.3); }
+        .ct-form-group input:focus, .ct-form-group textarea:focus { border-color:rgba(56,189,248,0.6); background:rgba(56,189,248,0.04); box-shadow:0 0 0 3px rgba(56,189,248,0.08); }
+        .ct-form-group textarea { min-height:110px; }
+
+        .ct-submit-btn {
+            display:flex; align-items:center; justify-content:center; gap:8px;
+            width:100%; padding:13px 24px;
+            background:linear-gradient(135deg,#38bdf8,#a855f7,#38bdf8); background-size:200% auto;
+            border:none; border-radius:14px; color:#fff; font-size:0.88rem; font-weight:700;
+            font-family:'Poppins',sans-serif; cursor:pointer;
+            transition:all 0.4s ease; position:relative; z-index:2; letter-spacing:0.5px;
+        }
+        .ct-submit-btn:hover { background-position:right center; transform:translateY(-3px); box-shadow:0 12px 36px rgba(56,189,248,0.35); }
+        .ct-submit-btn:disabled { opacity:0.6; cursor:not-allowed; transform:none; }
+        #ct-errorMsg { display:none; color:#f43f5e; margin-top:10px; font-size:0.78rem; position:relative; z-index:2; }
+
+        /* Footer */
+        .ct-footer {
+            position:relative; z-index:10; background:rgba(2,6,23,0.7);
+            border-top:1px solid rgba(56,189,248,0.1); backdrop-filter:blur(12px);
+            text-align:center; padding:18px; color:rgba(148,163,184,0.6);
+            font-size:0.875rem; margin-top:28px;
+        }
+        .ct-footer span { color:#38bdf8; font-weight:600; }
+
+        @media(max-width:900px) {
+            .ct-wrapper { grid-template-columns:1fr; }
+            .ct-page { padding:85px 20px 20px; }
+            .ct-form-row { grid-template-columns:1fr; }
+        }
+    </style>
 </head>
 <body>
 
-  <style>
-    /* @media (orientation: portrait){ */
-      /* nav{
-        display: flex;
-        flex-direction: column;
+    <canvas id="three-canvas"></canvas>
+    <div id="skill-tags"></div>
+    <div id="custom-cursor"></div>
+    <p id="ripple-hint">✦ click anywhere for ripple ✦</p>
+    <p id="drag-hint">⠿ drag cards · double-click to reset</p>
 
-      } */
-    /* } */
-  </style>
- <!-- ================= HEADER ================= -->
     <header class="header">
         <div class="logo">Sonu Ansari</div>
-
         <nav class="nav">
-            <a href="index.html" >Home</a>
+            <a href="index.html">Home</a>
             <a href="about.html">About</a>
             <a href="education.html">Education</a>
             <a href="skill.html">Skills</a>
@@ -44,255 +244,389 @@
         </nav>
     </header>
 
-<!-- HERO -->
-<section class="ct-hero">
-  <div class="ct-hero-label">Get In Touch</div>
-  <h1>Contact <span>Me</span></h1>
-  <p>Have a project in mind or want to hire me? Feel free to reach out — I'll get back to you as soon as possible!</p>
-</section>
+    <div class="ct-page">
+        <section class="ct-hero">
+            <div class="ct-hero-label">✦ Get In Touch</div>
+            <h1>Contact <span>Me</span></h1>
+            <div class="ct-title-line"></div>
+            <p>Have a project in mind or want to hire me? Feel free to reach out — I'll get back to you as soon as possible!</p>
+        </section>
 
-<!-- MAIN CONTENT -->
-<div class="ct-wrapper">
+        <div class="ct-wrapper">
+            <div class="ct-info-side">
 
-  <!-- LEFT: Info Cards -->
-  <div class="ct-info-side">
+                <div class="ct-info-card draggable" id="drag-email">
+                    <div class="drag-handle"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+                    <div class="ct-info-icon ct-icon-email">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 7l10 7 10-7"/></svg>
+                    </div>
+                    <div class="ct-info-text">
+                        <span class="ct-info-label">Email</span>
+                        <a href="mailto:786sonuansari123@gmail.com" class="ct-info-value">786sonuansari123@gmail.com</a>
+                    </div>
+                </div>
 
-    <div class="ct-info-card">
-      <div class="ct-info-icon ct-icon-email">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="2" y="4" width="20" height="16" rx="2"/>
-          <path d="M2 7l10 7 10-7"/>
-        </svg>
-      </div>
-      <div class="ct-info-text">
-        <span class="ct-info-label">Email</span>
-        <a href="mailto:786sonuansari123@gmail.com" class="ct-info-value">786sonuansari123@gmail.com</a>
-      </div>
-    </div>
+                <div class="ct-info-card draggable" id="drag-phone">
+                    <div class="drag-handle"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+                    <div class="ct-info-icon ct-icon-phone">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.26 12 19.79 19.79 0 0 1 1.15 3.18 2 2 0 0 1 3.12 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 8.91a16 16 0 0 0 5.66 5.66l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                    </div>
+                    <div class="ct-info-text">
+                        <span class="ct-info-label">Phone</span>
+                        <a href="tel:+917761018203" class="ct-info-value">+91 77610 18203</a>
+                    </div>
+                </div>
 
-    <div class="ct-info-card">
-      <div class="ct-info-icon ct-icon-phone">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.26 12 19.79 19.79 0 0 1 1.15 3.18 2 2 0 0 1 3.12 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 8.91a16 16 0 0 0 5.66 5.66l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
-        </svg>
-      </div>
-      <div class="ct-info-text">
-        <span class="ct-info-label">Phone</span>
-        <a href="tel:+917761018203" class="ct-info-value">+91 77610 18203</a>
-      </div>
-    </div>
+                <div class="ct-info-card draggable" id="drag-location">
+                    <div class="drag-handle"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+                    <div class="ct-info-icon ct-icon-location">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                    </div>
+                    <div class="ct-info-text">
+                        <span class="ct-info-label">Location</span>
+                        <span class="ct-info-value">Hyderabad, Telangana, India</span>
+                    </div>
+                </div>
 
-    <div class="ct-info-card">
-      <div class="ct-info-icon ct-icon-location">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/>
-          <circle cx="12" cy="10" r="3"/>
-        </svg>
-      </div>
-      <div class="ct-info-text">
-        <span class="ct-info-label">Location</span>
-        <span class="ct-info-value">Hyderabad, Telangana, India</span>
-      </div>
-    </div>
+                <div class="ct-social-section draggable" id="drag-social">
+                    <div class="drag-handle"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+                    <p class="ct-social-title">Follow Me</p>
+                    <div class="ct-socials">
+                        <a href="https://www.linkedin.com/in/sonuansari/" target="_blank" class="ct-social-btn">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg>
+                            LinkedIn
+                        </a>
+                        <a href="https://github.com/SonuAnsari1998" target="_blank" class="ct-social-btn">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.2 11.39.6.11.82-.26.82-.58v-2.03c-3.34.73-4.04-1.61-4.04-1.61-.54-1.38-1.33-1.75-1.33-1.75-1.09-.74.08-.73.08-.73 1.2.09 1.84 1.24 1.84 1.24 1.07 1.83 2.81 1.3 3.5 1 .1-.78.42-1.3.76-1.6-2.66-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.12-.31-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 3-.4c1.02.01 2.04.14 3 .4 2.29-1.55 3.3-1.23 3.3-1.23.66 1.66.24 2.87.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.61-2.81 5.63-5.48 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.22.7.83.58C20.56 21.8 24 17.3 24 12c0-6.63-5.37-12-12-12z"/></svg>
+                            GitHub
+                        </a>
+                        <a href="mailto:786sonuansari123@gmail.com?subject=Hello%20Sonu" target="_blank" class="ct-social-btn">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.273H1.636A1.636 1.636 0 0 1 0 19.366V5.457c0-2.023 2.309-3.178 3.927-1.964L5.455 4.64 12 9.548l6.545-4.91 1.528-1.145C21.69 2.28 24 3.434 24 5.457z"/></svg>
+                            Gmail
+                        </a>
+                    </div>
+                </div>
 
-    <!-- Social Links -->
-    <div class="ct-social-section">
-      <p class="ct-social-title">Follow Me</p>
-      <div class="ct-socials">
-        <a href="https://www.linkedin.com/in/sonuansari/" target="_blank" class="ct-social-btn">
-          <svg viewBox="0 0 24 24" fill="currentColor">
-            <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6zM2 9h4v12H2z"/>
-            <circle cx="4" cy="4" r="2"/>
-          </svg>
-          LinkedIn
-        </a>
-        <a href="https://github.com/SonuAnsari1998" target="_blank" class="ct-social-btn">
-          <svg viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.2 11.39.6.11.82-.26.82-.58v-2.03c-3.34.73-4.04-1.61-4.04-1.61-.54-1.38-1.33-1.75-1.33-1.75-1.09-.74.08-.73.08-.73 1.2.09 1.84 1.24 1.84 1.24 1.07 1.83 2.81 1.3 3.5 1 .1-.78.42-1.3.76-1.6-2.66-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.12-.31-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 3-.4c1.02.01 2.04.14 3 .4 2.29-1.55 3.3-1.23 3.3-1.23.66 1.66.24 2.87.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.61-2.81 5.63-5.48 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.22.7.83.58C20.56 21.8 24 17.3 24 12c0-6.63-5.37-12-12-12z"/>
-          </svg>
-          GitHub
-        </a>
-        <a href="mailto:786sonuansari123@gmail.com?subject=Hello%20Sonu&body=I%20want%20to%20contact%20you" target="_blank" rel="noopener noreferrer" class="ct-social-btn">
-          <svg viewBox="0 0 24 24" fill="currentColor">
-            <path d="M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.273H1.636A1.636 1.636 0 0 1 0 19.366V5.457c0-2.023 2.309-3.178 3.927-1.964L5.455 4.64 12 9.548l6.545-4.91 1.528-1.145C21.69 2.28 24 3.434 24 5.457z"/>
-          </svg>
-          Gmail
-        </a>
-      </div>
-    </div>
+            </div>
 
-  </div>
-
-  <!-- RIGHT: Contact Form -->
-  <div class="ct-form-side">
-    <div class="ct-form-card">
-      <h2 class="ct-form-title">Send a Message</h2>
-      <p class="ct-form-subtitle">Fill the form below and I will reply within 24 hours.</p>
-
-      <form id="ct-contactForm">
-        <div class="ct-form-row">
-          <div class="ct-form-group">
-            <label for="ct-name">Full Name</label>
-            <input type="text" id="ct-name" placeholder="Your Name" required />
-          </div>
-          <div class="ct-form-group">
-            <label for="ct-email">Email Address</label>
-            <input type="email" id="ct-email" placeholder="your@email.com" required />
-          </div>
+            <div class="ct-form-side">
+                <div class="ct-form-card draggable" id="drag-form">
+                    <div class="drag-handle"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+                    <div class="corner-accent"></div>
+                    <h2 class="ct-form-title">Send a Message</h2>
+                    <p class="ct-form-subtitle">Fill the form below and I will reply within 24 hours.</p>
+                    <form id="ct-contactForm">
+                        <div class="ct-form-row">
+                            <div class="ct-form-group">
+                                <label for="ct-name">Full Name</label>
+                                <input type="text" id="ct-name" placeholder="Your Name" required/>
+                            </div>
+                            <div class="ct-form-group">
+                                <label for="ct-email">Email Address</label>
+                                <input type="email" id="ct-email" placeholder="your@email.com" required/>
+                            </div>
+                        </div>
+                        <div class="ct-form-group">
+                            <label for="ct-subject">Subject</label>
+                            <input type="text" id="ct-subject" placeholder="Project / Job Opportunity / Query" required/>
+                        </div>
+                        <div class="ct-form-group">
+                            <label for="ct-message">Message</label>
+                            <textarea id="ct-message" rows="5" placeholder="Write your message here..." required></textarea>
+                        </div>
+                        <button type="submit" class="ct-submit-btn">
+                            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                            Send Message
+                        </button>
+                        <div id="ct-errorMsg">❌ Failed to send. Please try again or email directly.</div>
+                    </form>
+                </div>
+            </div>
         </div>
-
-        <div class="ct-form-group">
-          <label for="ct-subject">Subject</label>
-          <input type="text" id="ct-subject" placeholder="Project / Job Opportunity / Query" required />
-        </div>
-
-        <div class="ct-form-group">
-          <label for="ct-message">Message</label>
-          <textarea id="ct-message" rows="6" placeholder="Write your message here..." required></textarea>
-        </div>
-
-        <button type="submit" class="ct-submit-btn">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="22" y1="2" x2="11" y2="13"/>
-            <polygon points="22 2 15 22 11 13 2 9 22 2"/>
-          </svg>
-          Send Message
-        </button>
-
-        <div id="ct-errorMsg" style="display:none; color:#e74c3c; margin-top:12px; font-size:14px;">
-          ❌ Failed to send message. Please try again or email me directly.
-        </div>
-      </form>
     </div>
-  </div>
 
-</div>
+    <footer class="ct-footer">
+        Made with ❤️ by <span>Sonu Ansari</span> &nbsp;|&nbsp; Java Full Stack Developer
+    </footer>
 
-<!-- FOOTER -->
-<footer class="ct-footer">
-  Made with ❤️ by <span>Sonu Ansari</span> &nbsp;|&nbsp; Java Full Stack Developer
-</footer>
+    <div class="cursor"></div>
+    <div class="cursor-follower"></div>
+    <div id="cursor-particles"></div>
+    <script src="script.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
-    <!-- Custom Curs
-    <!-- Custom Cursor -->
-<div class="cursor"></div>
-<div class="cursor-follower"></div>
-<div id="cursor-particles"></div>
+    <script>
+    /* === HEADER SCROLL === */
+    window.addEventListener('scroll', function() {
+        document.querySelector('.header').classList.toggle('scrolled', window.scrollY > 30);
+    });
 
-<!-- JS link -->
-<script src="script.js"></script>
+    /* === CUSTOM CURSOR === */
+    var cur = document.getElementById('custom-cursor');
+    document.addEventListener('mousemove', function(e) {
+        cur.style.left = e.clientX + 'px';
+        cur.style.top  = e.clientY + 'px';
+    });
 
-<!-- EmailJS Form Handler -->
-<script>
-  function attachFormListener() {
-    const form = document.getElementById("ct-contactForm");
-    if (form) form.addEventListener("submit", submitHandler);
-  }
+    /* ============================================================
+       DRAG & DROP SYSTEM
+       - Mousedown on .draggable (not on inputs/buttons/links) starts drag
+       - Card becomes position:fixed, follows cursor smoothly
+       - Mouseup drops card at current position (stays there)
+       - Double-click resets card back to original flow position
+    ============================================================ */
+    (function() {
+        var dragging    = null;
+        var offsetX     = 0, offsetY = 0;
+        var origParent  = null, origNext = null;
+        var placeholder = null;
 
-  function submitHandler(e) {
-    e.preventDefault();
+        function nodrags(el) {
+            var tag = el.tagName.toLowerCase();
+            return ['input','textarea','button','a','select','label'].indexOf(tag) !== -1;
+        }
 
-    const btn = this.querySelector(".ct-submit-btn");
-    const errorMsg = document.getElementById("ct-errorMsg");
+        function makeDraggable(el) {
+            el.addEventListener('mousedown', function(e) {
+                if (nodrags(e.target)) return;
+                e.preventDefault();
+                e.stopPropagation();
 
-    btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Sending...`;
-    btn.disabled = true;
-    if (errorMsg) errorMsg.style.display = "none";
+                var rect = el.getBoundingClientRect();
+                offsetX = e.clientX - rect.left;
+                offsetY = e.clientY - rect.top;
 
-    const templateParams = {
-      name:    document.getElementById("ct-name").value,
-      email:   document.getElementById("ct-email").value,
-      subject: document.getElementById("ct-subject").value,
-      message: document.getElementById("ct-message").value,
-    };
+                // Store original DOM position
+                origParent = el.parentNode;
+                origNext   = el.nextSibling;
 
-    const userName = templateParams.name;
-    const formCard = document.querySelector(".ct-form-card");
-    const originalHTML = formCard.innerHTML;
+                // Create placeholder to maintain layout
+                placeholder = document.createElement('div');
+                placeholder.style.width   = rect.width  + 'px';
+                placeholder.style.height  = rect.height + 'px';
+                placeholder.style.opacity = '0.15';
+                placeholder.style.border  = '2px dashed rgba(56,189,248,0.35)';
+                placeholder.style.borderRadius = '18px';
+                placeholder.style.flexShrink = '0';
+                origParent.insertBefore(placeholder, origNext);
 
-    emailjs.send("service_qlnxond", "template_pgb22bb", templateParams)
-      .then(function() {
-        formCard.innerHTML = `
-          <div id="ct-successCard" style="
-            background: rgba(255,255,255,0.03);
-            backdrop-filter: blur(10px);
-            border-radius: 14px;
-            padding: 28px 24px;
-            text-align: center;
-            border: 1px solid rgba(255,255,255,0.05);
-            transition: opacity 0.6s ease;
-            opacity: 0;
-          ">
-            <div style="
-              width: 60px; height: 60px;
-              border-radius: 50%;
-              border: 2px solid transparent;
-              background: linear-gradient(#0d1b2a, #0d1b2a) padding-box,
-                          linear-gradient(135deg, #00d4ff, #a855f7) border-box;
-              display: flex; align-items: center; justify-content: center;
-              margin: 0 auto 14px; font-size: 26px;
-            ">💌</div>
+                // Move card to body as fixed
+                document.body.appendChild(el);
+                el.style.position   = 'fixed';
+                el.style.left       = (e.clientX - offsetX) + 'px';
+                el.style.top        = (e.clientY - offsetY) + 'px';
+                el.style.width      = rect.width + 'px';
+                el.style.zIndex     = '600';
+                el.style.margin     = '0';
+                el.style.transition = 'box-shadow 0.1s, opacity 0.1s';
+                el.style.boxShadow  = '0 24px 60px rgba(56,189,248,0.4), 0 0 40px rgba(168,85,247,0.2)';
+                el.style.transform  = 'scale(1.03)';
+                el.classList.add('is-dragging');
 
-            <h2 style="
-              font-size: 20px; font-weight: 700;
-              background: linear-gradient(90deg, #00d4ff, #a855f7);
-              -webkit-background-clip: text;
-              -webkit-text-fill-color: transparent;
-              margin-bottom: 8px;
-            ">Message Sent!</h2>
+                cur.classList.add('grabbing');
+                document.body.style.userSelect = 'none';
+                dragging = el;
+            });
 
-            <p style="color:#888; font-size:13px; line-height:1.7; margin-bottom:10px;">
-              Thank you <strong style="color:#fff; -webkit-text-fill-color:#fff;">${userName}</strong>, your message has been delivered.
-              I'll get back to you within
-              <strong style="color:#00d4ff; -webkit-text-fill-color:#00d4ff;">24 hours!</strong>
-            </p>
+            // Double click to reset
+            el.addEventListener('dblclick', function(e) {
+                if (nodrags(e.target)) return;
+                if (el.style.position === 'fixed') {
+                    el.style.position  = '';
+                    el.style.left      = '';
+                    el.style.top       = '';
+                    el.style.width     = '';
+                    el.style.zIndex    = '';
+                    el.style.margin    = '';
+                    el.style.transform = '';
+                    el.style.boxShadow = '';
+                    el.style.transition= '';
+                    el.classList.remove('is-dragging');
+                }
+            });
 
-            <p style="color:#aaa; font-size:12px; margin-bottom:16px;">
-              Form will return in <span id="ct-countdown" style="color:#a855f7; font-weight:700;">30</span> seconds...
-            </p>
+            // Hover cursor
+            el.addEventListener('mouseenter', function() {
+                if (!dragging) cur.classList.add('grab');
+            });
+            el.addEventListener('mouseleave', function() {
+                cur.classList.remove('grab');
+            });
+        }
 
-            <button onclick="ct_showForm()" style="
-              background: linear-gradient(135deg, #00d4ff, #a855f7);
-              color:#fff; border:none;
-              padding:10px 24px; border-radius:8px;
-              font-size:13px; font-weight:600;
-              cursor:pointer; font-family:'Poppins',sans-serif;
-            ">Send Another Message</button>
-          </div>
-        `;
+        document.addEventListener('mousemove', function(e) {
+            if (!dragging) return;
+            dragging.style.left = (e.clientX - offsetX) + 'px';
+            dragging.style.top  = (e.clientY - offsetY) + 'px';
+        });
 
-        // Fade in
-        setTimeout(() => { document.getElementById("ct-successCard").style.opacity = "1"; }, 50);
+        document.addEventListener('mouseup', function() {
+            if (!dragging) return;
 
-        // Countdown timer
-        let timeLeft = 30;
-        const timer = setInterval(() => {
-          timeLeft--;
-          const el = document.getElementById("ct-countdown");
-          if (el) el.textContent = timeLeft;
-          if (timeLeft <= 0) { clearInterval(timer); ct_showForm(); }
-        }, 1000);
+            // Drop animation
+            dragging.style.transform  = 'scale(1)';
+            dragging.style.boxShadow  = '0 8px 32px rgba(56,189,248,0.2)';
+            dragging.style.transition = 'transform 0.2s, box-shadow 0.3s';
 
-        // Show form back
-        window.ct_showForm = function() {
-          clearInterval(timer);
-          const card = document.getElementById("ct-successCard");
-          if (card) card.style.opacity = "0";
-          setTimeout(() => {
-            formCard.innerHTML = originalHTML;
-            attachFormListener();
-          }, 600);
+            // Remove placeholder
+            if (placeholder && placeholder.parentNode) {
+                placeholder.parentNode.removeChild(placeholder);
+            }
+            placeholder = null;
+
+            dragging.classList.remove('is-dragging');
+            cur.classList.remove('grabbing');
+            document.body.style.userSelect = '';
+            dragging = null;
+            origParent = null; origNext = null;
+        });
+
+        // Init all cards
+        document.querySelectorAll('.draggable').forEach(makeDraggable);
+    })();
+
+    /* === FLOATING SKILL TAGS === */
+    (function() {
+        var tags = ['Java','Spring Boot','React','Microservices','MySQL','REST API','Docker','Git','AWS','Kafka','Hire Me','Contact','JWT','Hibernate'];
+        var container = document.getElementById('skill-tags');
+        tags.forEach(function(tag, idx) {
+            var el = document.createElement('div');
+            el.className = 'skill-tag'; el.textContent = tag;
+            var dur = 14 + Math.random()*10, del = idx*1.7;
+            el.style.left = (5+Math.random()*85)+'%';
+            el.style.bottom = '-30px';
+            el.style.animationDuration = dur+'s';
+            el.style.animationDelay = del+'s';
+            container.appendChild(el);
+        });
+    })();
+
+    /* === EMAILJS === */
+    function attachFormListener() {
+        var form = document.getElementById('ct-contactForm');
+        if (form) form.addEventListener('submit', submitHandler);
+    }
+    function submitHandler(e) {
+        e.preventDefault();
+        var btn = this.querySelector('.ct-submit-btn');
+        var errMsg = document.getElementById('ct-errorMsg');
+        var svgIcon = '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> ';
+        btn.innerHTML = svgIcon + 'Sending...'; btn.disabled = true; errMsg.style.display = 'none';
+        var p = {
+            name:    document.getElementById('ct-name').value,
+            email:   document.getElementById('ct-email').value,
+            subject: document.getElementById('ct-subject').value,
+            message: document.getElementById('ct-message').value
         };
+        var name = p.name;
+        var card = document.querySelector('.ct-form-card');
+        var orig = card.innerHTML;
+        emailjs.send('service_qlnxond','template_pgb22bb',p).then(function() {
+            card.innerHTML = '<div id="suc" style="text-align:center;padding:44px 24px;opacity:0;transition:opacity 0.5s;"><div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,rgba(56,189,248,0.15),rgba(168,85,247,0.15));border:2px solid rgba(56,189,248,0.4);display:flex;align-items:center;justify-content:center;margin:0 auto 18px;font-size:28px;">💌</div><h2 style="font-size:1.3rem;font-weight:700;background:linear-gradient(90deg,#38bdf8,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:10px;">Message Sent!</h2><p style="color:rgba(148,163,184,0.85);font-size:0.875rem;line-height:1.7;margin-bottom:8px;">Thank you <strong style="color:#e2e8f0;-webkit-text-fill-color:#e2e8f0;">'+name+'</strong>, your message has been delivered.<br>I\'ll reply within <strong style="color:#38bdf8;-webkit-text-fill-color:#38bdf8;">24 hours!</strong></p><p style="color:rgba(148,163,184,0.45);font-size:0.76rem;margin-bottom:20px;">Form returns in <span id="ct-cd" style="color:#a855f7;font-weight:700;">30</span>s</p><button onclick="ctReset()" style="background:linear-gradient(135deg,#38bdf8,#a855f7);color:#fff;border:none;padding:10px 26px;border-radius:10px;font-size:0.82rem;font-weight:600;cursor:pointer;font-family:Poppins,sans-serif;">Send Another</button></div>';
+            setTimeout(function(){var s=document.getElementById('suc');if(s)s.style.opacity='1';},50);
+            var t=30, tm=setInterval(function(){t--;var el=document.getElementById('ct-cd');if(el)el.textContent=t;if(t<=0){clearInterval(tm);ctReset();}},1000);
+            window.ctReset=function(){clearInterval(tm);var s=document.getElementById('suc');if(s)s.style.opacity='0';setTimeout(function(){card.innerHTML=orig;attachFormListener();},500);};
+        }, function() {
+            btn.innerHTML = svgIcon + 'Send Message'; btn.disabled=false; errMsg.style.display='block';
+        });
+    }
+    attachFormListener();
 
-      }, function(error) {
-        btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Send Message`;
-        btn.disabled = false;
-        alert("❌ Failed to send. Please try again.");
-      });
-  }
+    /* === 3D BACKGROUND === */
+    (function() {
+        var W=window.innerWidth, H=window.innerHeight;
+        var canvas=document.getElementById('three-canvas');
+        var renderer=new THREE.WebGLRenderer({canvas:canvas,antialias:true,alpha:false});
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio,2)); renderer.setSize(W,H); renderer.setClearColor(0x020617,1);
+        var scene=new THREE.Scene(); scene.fog=new THREE.FogExp2(0x020617,0.025);
+        var camera=new THREE.PerspectiveCamera(65,W/H,0.1,500); camera.position.set(0,1,8);
+        var mouse={x:0,y:0},camTarget={x:0,y:0};
+        document.addEventListener('mousemove',function(e){mouse.x=(e.clientX/W-0.5)*2;mouse.y=(e.clientY/H-0.5)*2;});
 
-  attachFormListener();
-</script>
+        var gGeo=new THREE.BufferGeometry(),gPos=new Float32Array(12000*3),gCol=new Float32Array(12000*3);
+        var cI=new THREE.Color('#38bdf8'),cM=new THREE.Color('#a855f7'),cO=new THREE.Color('#f43f5e');
+        for(var i=0;i<12000;i++){var i3=i*3,r=Math.pow(Math.random(),0.5)*14+0.3,ang=(i%4)*(Math.PI*2/4)+r*0.55;gPos[i3]=Math.cos(ang)*r+(Math.random()-0.5)*0.38*r;gPos[i3+1]=(Math.random()-0.5)*0.095;gPos[i3+2]=Math.sin(ang)*r+(Math.random()-0.5)*0.38*r;var t=r/14.3,c=t<0.5?cI.clone().lerp(cM,t*2):cM.clone().lerp(cO,(t-0.5)*2);gCol[i3]=c.r;gCol[i3+1]=c.g;gCol[i3+2]=c.b;}
+        gGeo.setAttribute('position',new THREE.BufferAttribute(gPos,3));gGeo.setAttribute('color',new THREE.BufferAttribute(gCol,3));
+        var galaxy=new THREE.Points(gGeo,new THREE.PointsMaterial({size:0.06,vertexColors:true,transparent:true,opacity:0.9,depthWrite:false}));
+        galaxy.position.set(0,-4,-8);galaxy.rotation.x=0.25;scene.add(galaxy);
 
+        var sPos=new Float32Array(15000*3);for(var s=0;s<15000*3;s++)sPos[s]=(Math.random()-0.5)*300;
+        var sGeo=new THREE.BufferGeometry();sGeo.setAttribute('position',new THREE.BufferAttribute(sPos,3));
+        var stars=new THREE.Points(sGeo,new THREE.PointsMaterial({color:0xffffff,size:0.06,transparent:true,opacity:0.75}));scene.add(stars);
+
+        var nodePos=[];for(var n=0;n<60;n++)nodePos.push(new THREE.Vector3((Math.random()-0.5)*24,(Math.random()-0.5)*14,(Math.random()-0.5)*10-3));
+        var ndP=new Float32Array(60*3);for(var nd=0;nd<60;nd++){ndP[nd*3]=nodePos[nd].x;ndP[nd*3+1]=nodePos[nd].y;ndP[nd*3+2]=nodePos[nd].z;}
+        var ndGeo=new THREE.BufferGeometry();ndGeo.setAttribute('position',new THREE.BufferAttribute(ndP,3));
+        scene.add(new THREE.Points(ndGeo,new THREE.PointsMaterial({color:0x38bdf8,size:0.12,transparent:true,opacity:0.9})));
+        var lv=[];for(var a=0;a<60;a++)for(var b=a+1;b<60;b++)if(nodePos[a].distanceTo(nodePos[b])<5.5)lv.push(nodePos[a].x,nodePos[a].y,nodePos[a].z,nodePos[b].x,nodePos[b].y,nodePos[b].z);
+        var lGeo=new THREE.BufferGeometry();lGeo.setAttribute('position',new THREE.BufferAttribute(new Float32Array(lv),3));
+        var constLines=new THREE.LineSegments(lGeo,new THREE.LineBasicMaterial({color:0x38bdf8,transparent:true,opacity:0.12}));scene.add(constLines);
+
+        var stA=[],stB=[],rngs=[];
+        for(var d=0;d<120;d++){var dt=d/120,ang2=dt*Math.PI*8,yy=dt*10-5;stA.push(new THREE.Vector3(Math.cos(ang2),yy,Math.sin(ang2)));stB.push(new THREE.Vector3(Math.cos(ang2+Math.PI),yy,Math.sin(ang2+Math.PI)));if(d%8===0)rngs.push([stA[stA.length-1],stB[stB.length-1]]);}
+        function mkL(pts,col){var g=new THREE.BufferGeometry().setFromPoints(pts);return new THREE.Line(g,new THREE.LineBasicMaterial({color:col,transparent:true,opacity:0.7}));}
+        var dnaGroup=new THREE.Group();dnaGroup.add(mkL(stA,0x38bdf8));dnaGroup.add(mkL(stB,0xf43f5e));
+        rngs.forEach(function(r){var rg=new THREE.BufferGeometry().setFromPoints(r);dnaGroup.add(new THREE.Line(rg,new THREE.LineBasicMaterial({color:0xa855f7,transparent:true,opacity:0.5})));[0,1].forEach(function(idx){var sp=new THREE.Mesh(new THREE.SphereGeometry(0.06,8,8),new THREE.MeshBasicMaterial({color:idx===0?0x38bdf8:0xf43f5e}));sp.position.copy(r[idx]);dnaGroup.add(sp);});});
+        dnaGroup.position.set(-7,0,-2);scene.add(dnaGroup);
+
+        var pGrp=new THREE.Group();
+        for(var ri=0;ri<18;ri++){var t2=ri/18,rS=1.5-t2*0.9,rC=new THREE.Color().setHSL(0.55+t2*0.25,1,0.55),rM=new THREE.Mesh(new THREE.TorusGeometry(rS,0.015,8,60),new THREE.MeshBasicMaterial({color:rC,transparent:true,opacity:0.7-t2*0.4}));rM.position.z=-t2*3.5;pGrp.add(rM);}
+        pGrp.position.set(7,1,-3);scene.add(pGrp);
+
+        var shapes=[];
+        function mkWire(geo,col,x,y,z){var e=new THREE.EdgesGeometry(geo);var m=new THREE.LineSegments(e,new THREE.LineBasicMaterial({color:col,transparent:true,opacity:0.55}));m.position.set(x,y,z);scene.add(m);shapes.push(m);}
+        mkWire(new THREE.IcosahedronGeometry(1.4,1),0x38bdf8,0,1.5,-5);mkWire(new THREE.TorusGeometry(1.0,0.25,16,60),0xa855f7,4.5,-1,-6);
+        mkWire(new THREE.OctahedronGeometry(1.1),0xf43f5e,-4.5,0.5,-5);mkWire(new THREE.DodecahedronGeometry(0.7),0x22d3ee,3,3,-4);
+        mkWire(new THREE.IcosahedronGeometry(0.5,0),0x818cf8,-2.5,-2.5,-3);mkWire(new THREE.TetrahedronGeometry(0.8),0xf9a8d4,0,-3,-4);
+
+        var grid=new THREE.GridHelper(60,60,0x1e3a5f,0x0c1a36);grid.material.transparent=true;grid.material.opacity=0.25;grid.position.y=-5;scene.add(grid);
+        var pt1=new THREE.PointLight(0x38bdf8,3,25);scene.add(pt1);var pt2=new THREE.PointLight(0xa855f7,3,25);scene.add(pt2);var pt3=new THREE.PointLight(0xf43f5e,2,20);scene.add(pt3);
+        scene.add(new THREE.AmbientLight(0x1a1a2e,0.4));
+
+        var ripples=[];
+        function spawnRipple(wx,wy,wz){
+            var grp=new THREE.Group();grp.position.set(wx,wy,wz);scene.add(grp);
+            var colors=[0x38bdf8,0xa855f7,0xf43f5e,0x22d3ee],rings=[];
+            for(var ri2=0;ri2<4;ri2++){var rg=new THREE.Mesh(new THREE.TorusGeometry(0.01,0.02,8,40),new THREE.MeshBasicMaterial({color:colors[ri2],transparent:true,opacity:1,side:THREE.DoubleSide}));rg.rotation.x=Math.PI*0.5;grp.add(rg);rings.push({mesh:rg,delay:ri2*0.06});}
+            var bP=new Float32Array(60*3);for(var bi=0;bi<60;bi++){bP[bi*3]=(Math.random()-0.5)*0.1;bP[bi*3+1]=(Math.random()-0.5)*0.1;bP[bi*3+2]=(Math.random()-0.5)*0.1;}
+            var bGeo=new THREE.BufferGeometry();bGeo.setAttribute('position',new THREE.BufferAttribute(bP,3));
+            var bMesh=new THREE.Points(bGeo,new THREE.PointsMaterial({color:0x38bdf8,size:0.08,transparent:true,opacity:1}));grp.add(bMesh);
+            ripples.push({group:grp,rings:rings,burstMesh:bMesh,bPos:bP,life:0,maxLife:1.2});
+        }
+        var rc=new THREE.Raycaster(),cp=new THREE.Plane(new THREE.Vector3(0,0,1),0),ct=new THREE.Vector3();
+        document.addEventListener('click',function(e){
+            var tag=e.target.tagName.toLowerCase();
+            if(['input','textarea','button','a','select','label'].indexOf(tag)!==-1)return;
+            var ndc=new THREE.Vector2((e.clientX/W)*2-1,-(e.clientY/H)*2+1);
+            rc.setFromCamera(ndc,camera);rc.ray.intersectPlane(cp,ct);spawnRipple(ct.x,ct.y,ct.z);
+        });
+
+        var clock=new THREE.Clock(),rs=[0.20,0.15,0.25,0.35,0.40,0.28];
+        function animate(){
+            requestAnimationFrame(animate);var t=clock.getElapsedTime();
+            galaxy.rotation.y=t*0.03;stars.rotation.y=t*0.003;
+            constLines.material.opacity=0.08+Math.sin(t*0.7)*0.06;
+            dnaGroup.rotation.y=t*0.4;dnaGroup.position.y=Math.sin(t*0.5)*0.5;
+            pGrp.rotation.z=t*0.25;pGrp.rotation.y=t*0.1;
+            pGrp.children.forEach(function(ring,ri){ring.rotation.z=t*(0.3+ri*0.05);ring.material.opacity=(0.4+Math.sin(t*1.5+ri*0.3)*0.3)*(1-ri/18);});
+            shapes.forEach(function(sh,i){sh.rotation.x=t*rs[i];sh.rotation.y=t*rs[i]*1.3;sh.position.y+=Math.sin(t*0.7+i)*0.003;});
+            pt1.position.set(Math.sin(t*0.5)*7,2,Math.cos(t*0.5)*7);pt2.position.set(Math.cos(t*0.4)*7,-1,Math.sin(t*0.4)*7);pt3.position.set(Math.sin(t*0.6)*5,Math.cos(t)*3,-2);
+            grid.position.y=-5+Math.sin(t*0.3)*0.15;
+            ripples=ripples.filter(function(rp){
+                rp.life+=0.016;var p=rp.life/rp.maxLife;
+                rp.rings.forEach(function(ring){var r2=Math.max(0,p-ring.delay/rp.maxLife);ring.mesh.scale.setScalar(1+r2*12);ring.mesh.material.opacity=Math.max(0,1-r2*1.2);});
+                var bArr=rp.burstMesh.geometry.attributes.position.array;
+                for(var bi=0;bi<bArr.length;bi+=3){bArr[bi]+=(Math.random()-0.5)*0.06*(1-p);bArr[bi+1]+=(Math.random()-0.5)*0.06*(1-p);bArr[bi+2]+=(Math.random()-0.5)*0.06*(1-p);}
+                rp.burstMesh.geometry.attributes.position.needsUpdate=true;rp.burstMesh.material.opacity=Math.max(0,1-p);
+                if(p>=1){scene.remove(rp.group);return false;}return true;
+            });
+            camTarget.x+=(mouse.x*1.2-camTarget.x)*0.05;camTarget.y+=(-mouse.y*0.7-camTarget.y)*0.05;
+            camera.position.x=camTarget.x;camera.position.y=1+camTarget.y;camera.lookAt(0,0,0);
+            renderer.render(scene,camera);
+        }
+        animate();
+        window.addEventListener('resize',function(){W=window.innerWidth;H=window.innerHeight;camera.aspect=W/H;camera.updateProjectionMatrix();renderer.setSize(W,H);});
+    })();
+    </script>
 </body>
 </html>

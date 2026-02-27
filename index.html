@@ -1,95 +1,174 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Sonu Ansari - Java Full Stack Developer Portfolio">
-    <title>Sonu Ansari</title>
-
+    <title>Sonu Ansari — Java Full Stack Developer</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 
     <style>
+        /* ===== KEYFRAMES ===== */
         @keyframes orbitSpin    { from{transform:rotate(0deg)}   to{transform:rotate(360deg)} }
         @keyframes orbitSpinRev { from{transform:rotate(360deg)} to{transform:rotate(0deg)} }
         @keyframes dotPulse     { 0%,100%{opacity:1;transform:translateX(-50%) scale(1)} 50%{opacity:0.2;transform:translateX(-50%) scale(0.4)} }
         @keyframes dotPulseY    { 0%,100%{opacity:1;transform:translateY(-50%) scale(1)} 50%{opacity:0.2;transform:translateY(-50%) scale(0.4)} }
+        @keyframes glowPulse    { 0%,100%{box-shadow:0 0 30px rgba(56,189,248,0.2),0 0 60px rgba(168,85,247,0.1)} 50%{box-shadow:0 0 80px rgba(56,189,248,0.7),0 0 140px rgba(168,85,247,0.5)} }
+        @keyframes slideInLeft  { from{opacity:0;transform:translateX(-60px)} to{opacity:1;transform:translateX(0)} }
+        @keyframes fadeInUp     { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)} }
+        @keyframes glowText     { 0%,100%{text-shadow:0 0 10px rgba(56,189,248,0.5)} 50%{text-shadow:0 0 30px rgba(56,189,248,1),0 0 60px rgba(168,85,247,0.8)} }
+        @keyframes borderGlow   { 0%,100%{border-color:rgba(56,189,248,0.15)} 50%{border-color:rgba(168,85,247,0.5)} }
+        @keyframes scanLine     { 0%{top:-5%} 100%{top:105%} }
+        @keyframes dragPulse    { 0%,100%{opacity:0.5;transform:translateX(-50%) scale(1)} 50%{opacity:1;transform:translateX(-50%) scale(1.04)} }
+        @keyframes blink        { 0%,100%{opacity:1} 50%{opacity:0} }
+        @keyframes statusPulse  { 0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,0.6)} 50%{box-shadow:0 0 0 8px rgba(34,197,94,0)} }
+        @keyframes trailFade    { 0%{opacity:0.9;transform:translate(-50%,-50%) scale(1)} 100%{opacity:0;transform:translate(-50%,-50%) scale(0)} }
+        @keyframes skillFloat   { 0%{opacity:0;transform:translateY(0) scale(0.8)} 10%{opacity:0.8} 90%{opacity:0.8} 100%{opacity:0;transform:translateY(-100vh) scale(1.1)} }
 
-        .orbit-wrap {
-            position: absolute;
-            width: 100%; height: 100%;
-            top: 0; left: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        /* ===== BASE ===== */
+        html,body { margin:0;padding:0;overflow-x:hidden;background:#020617;font-family:'Poppins',sans-serif;cursor:none; }
+
+        /* ===== LAYERS ===== */
+        #matrix-canvas { position:fixed;inset:0;z-index:1;pointer-events:none;opacity:0.18; }
+        #three-canvas   { position:fixed;inset:0;z-index:2;pointer-events:none; }
+        #skill-tags     { position:fixed;inset:0;z-index:3;pointer-events:none; }
+        #trail-layer    { position:fixed;inset:0;z-index:8;pointer-events:none; }
+        .header,.hero,.footer { position:relative;z-index:10; }
+
+        /* ===== HEADER ===== */
+        .header {
+            position:fixed !important;top:0 !important;left:0 !important;right:0 !important;
+            z-index:1000 !important;background:rgba(2,6,23,0.6) !important;
+            backdrop-filter:blur(12px) !important;-webkit-backdrop-filter:blur(12px) !important;
+            border-bottom:1px solid rgba(56,189,248,0.1) !important;
+            transition:background 0.3s ease,box-shadow 0.3s ease !important;
+        }
+        .header.scrolled {
+            background:rgba(2,6,23,0.92) !important;
+            box-shadow:0 4px 30px rgba(56,189,248,0.15) !important;
+            border-bottom:1px solid rgba(56,189,248,0.25) !important;
         }
 
-        .arc-ring {
-            position: absolute;
-            border-radius: 50%;
+        /* ===== HERO TEXT CARD ===== */
+        .hero-text {
+            background:rgba(2,6,23,0.55);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+            border:1px solid rgba(56,189,248,0.15);border-radius:24px;padding:40px 44px;
+            position:relative;overflow:hidden;
+            animation:slideInLeft 1s ease 0.3s both,borderGlow 4s ease-in-out infinite 1s;
+            transform-style:preserve-3d;will-change:transform;
+        }
+        .hero-text::before {
+            content:'';position:absolute;left:0;right:0;height:2px;
+            background:linear-gradient(90deg,transparent,rgba(56,189,248,0.4),transparent);
+            animation:scanLine 4s linear infinite;z-index:1;
+        }
+        .hero-text::after {
+            content:'';position:absolute;top:0;left:0;width:60px;height:60px;
+            border-top:2px solid #38bdf8;border-left:2px solid #38bdf8;border-radius:24px 0 0 0;opacity:0.7;
+        }
+        .hero-text h1          { animation:fadeInUp 1s ease 0.5s both; }
+        .hero-text h1 span     { animation:glowText 3s ease-in-out infinite; }
+        .hero-text p           { animation:fadeInUp 1s ease 0.7s both; }
+        .hero-text .hero-buttons { animation:fadeInUp 1s ease 0.9s both; }
+        .hero-text .social-links { animation:fadeInUp 1s ease 1.1s both; }
+
+        /* ===== TYPEWRITER ===== */
+        .subtitle { min-height:28px;color:#38bdf8;font-size:1.05rem;font-weight:500;letter-spacing:1px;margin-bottom:12px; }
+        .cursor-blink {
+            display:inline-block;width:2px;height:1em;background:#a855f7;
+            margin-left:2px;vertical-align:middle;animation:blink 0.75s step-end infinite;
         }
 
-        .arc-r1 {
-            width: 360px; height: 360px;
-            border: 2px solid transparent;
-            border-top-color: #38bdf8;
-            border-right-color: #38bdf8;
-            animation: orbitSpin 6s linear infinite;
+        /* ===== STATUS BADGE ===== */
+        .status-badge {
+            display:inline-flex;align-items:center;gap:8px;
+            background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.3);
+            border-radius:50px;padding:5px 14px;font-size:0.72rem;font-weight:600;
+            color:rgba(34,197,94,0.9);letter-spacing:1px;text-transform:uppercase;
+            margin-bottom:14px;position:relative;z-index:2;
+            animation:fadeInUp 1s ease 0.4s both;
+        }
+        .status-dot { width:8px;height:8px;border-radius:50%;background:#22c55e;animation:statusPulse 2s ease-in-out infinite; }
+
+        /* ===== ORBIT ===== */
+        .orbit-wrap { position:absolute;width:100%;height:100%;top:0;left:0;display:flex;align-items:center;justify-content:center; }
+        .arc-ring { position:absolute;border-radius:50%; }
+        .arc-r1 { width:360px;height:360px;border:2px solid transparent;border-top-color:#38bdf8;border-right-color:#38bdf8;animation:orbitSpin 6s linear infinite; }
+        .arc-r2 { width:330px;height:330px;border:2px solid transparent;border-bottom-color:#a855f7;border-left-color:#a855f7;animation:orbitSpinRev 4s linear infinite; }
+        .arc-r3 { width:300px;height:300px;border:2px solid transparent;border-top-color:#f43f5e;border-right-color:#f43f5e;animation:orbitSpin 8s linear infinite; }
+        .arc-dot { position:absolute;border-radius:50%;top:-6px;left:50%;transform:translateX(-50%);animation:dotPulse 1.2s ease-in-out infinite; }
+        .arc-r1 .arc-dot { width:12px;height:12px;background:#38bdf8;box-shadow:0 0 10px #38bdf8,0 0 20px #38bdf8; }
+        .arc-r2 .arc-dot { width:10px;height:10px;background:#a855f7;box-shadow:0 0 10px #a855f7,0 0 20px #a855f7;top:auto;bottom:-5px;animation-delay:0.4s; }
+        .arc-r3 .arc-dot { width:10px;height:10px;background:#f43f5e;box-shadow:0 0 10px #f43f5e,0 0 20px #f43f5e;top:50%;left:-5px;transform:translateY(-50%);animation:dotPulseY 1.2s ease-in-out infinite;animation-delay:0.8s; }
+        .image-wrapper { animation:glowPulse 4s ease-in-out infinite;transform-style:preserve-3d; }
+        .hero-image { transform-style:preserve-3d;will-change:transform; }
+
+        /* ===== SKILL TAGS ===== */
+        .skill-tag {
+            position:absolute;background:rgba(56,189,248,0.08);border:1px solid rgba(56,189,248,0.25);
+            color:rgba(56,189,248,0.7);font-size:11px;font-family:'Poppins',monospace;
+            padding:4px 10px;border-radius:20px;backdrop-filter:blur(4px);white-space:nowrap;
+            animation:skillFloat linear infinite;opacity:0;
         }
 
-        .arc-r2 {
-            width: 330px; height: 330px;
-            border: 2px solid transparent;
-            border-bottom-color: #a855f7;
-            border-left-color: #a855f7;
-            animation: orbitSpinRev 4s linear infinite;
+        /* ===== FOOTER ===== */
+        .footer { background:rgba(2,6,23,0.7) !important;border-top:1px solid rgba(56,189,248,0.1) !important;backdrop-filter:blur(12px) !important; }
+
+        /* ===== CUSTOM CURSOR ===== */
+        #custom-cursor {
+            position:fixed;width:16px;height:16px;border:2px solid #38bdf8;border-radius:50%;
+            pointer-events:none;z-index:9999;mix-blend-mode:screen;
+            transform:translate(-50%,-50%);
+            transition:width 0.15s,height 0.15s,border-color 0.15s,background 0.15s;
+        }
+        #custom-cursor-dot {
+            position:fixed;width:5px;height:5px;background:#38bdf8;border-radius:50%;
+            pointer-events:none;z-index:9999;transform:translate(-50%,-50%);
+        }
+        #custom-cursor.grab     { width:26px;height:26px;border-color:#a855f7;background:rgba(168,85,247,0.1); }
+        #custom-cursor.grabbing { width:20px;height:20px;border-color:#f43f5e;background:rgba(244,63,94,0.15); }
+        #custom-cursor.clicked  { width:36px;height:36px;border-color:#a855f7; }
+
+        /* ===== CURSOR TRAIL ===== */
+        .trail-particle {
+            position:fixed;border-radius:50%;pointer-events:none;
+            transform:translate(-50%,-50%);
+            animation:trailFade 0.6s ease forwards;
         }
 
-        .arc-r3 {
-            width: 300px; height: 300px;
-            border: 2px solid transparent;
-            border-top-color: #f43f5e;
-            border-right-color: #f43f5e;
-            animation: orbitSpin 8s linear infinite;
+        /* ===== DRAG HANDLE ===== */
+        .drag-handle {
+            position:absolute;top:10px;right:12px;display:grid;grid-template-columns:1fr 1fr;
+            gap:2.5px;width:14px;opacity:0;transition:opacity 0.2s;z-index:5;pointer-events:none;
         }
+        .drag-handle span { width:3px;height:3px;border-radius:50%;background:rgba(56,189,248,0.6);display:block; }
+        .draggable:hover .drag-handle { opacity:1; }
+        .draggable { cursor:none;user-select:none;-webkit-user-select:none; }
+        .draggable.is-dragging { z-index:600 !important;opacity:0.92; }
 
-        .arc-dot {
-            position: absolute;
-            border-radius: 50%;
-            top: -6px;
-            left: 50%;
-            transform: translateX(-50%);
-            animation: dotPulse 1.2s ease-in-out infinite;
+        /* ===== HINTS ===== */
+        #ripple-hint {
+            position:fixed;bottom:30px;left:50%;transform:translateX(-50%);
+            color:rgba(56,189,248,0.4);font-size:11px;letter-spacing:3px;text-transform:uppercase;
+            z-index:20;pointer-events:none;animation:fadeInUp 1s ease 2s both;
         }
-
-        .arc-r1 .arc-dot {
-            width: 12px; height: 12px;
-            background: #38bdf8;
-            box-shadow: 0 0 10px #38bdf8, 0 0 20px #38bdf8;
-        }
-
-        .arc-r2 .arc-dot {
-            width: 10px; height: 10px;
-            background: #a855f7;
-            box-shadow: 0 0 10px #a855f7, 0 0 20px #a855f7;
-            top: auto; bottom: -5px;
-            animation-delay: 0.4s;
-        }
-
-        .arc-r3 .arc-dot {
-            width: 10px; height: 10px;
-            background: #f43f5e;
-            box-shadow: 0 0 10px #f43f5e, 0 0 20px #f43f5e;
-            top: 50%; left: -5px;
-            transform: translateY(-50%);
-            animation: dotPulseY 1.2s ease-in-out infinite;
-            animation-delay: 0.8s;
+        #drag-hint {
+            position:fixed;bottom:58px;left:50%;transform:translateX(-50%);
+            color:rgba(168,85,247,0.6);font-size:11px;letter-spacing:3px;text-transform:uppercase;
+            z-index:20;pointer-events:none;animation:dragPulse 2.5s ease-in-out infinite;
         }
     </style>
 </head>
-
 <body>
+
+    <canvas id="matrix-canvas"></canvas>
+    <canvas id="three-canvas"></canvas>
+    <div id="skill-tags"></div>
+    <div id="trail-layer"></div>
+    <div id="custom-cursor"></div>
+    <div id="custom-cursor-dot"></div>
+    <p id="drag-hint">⠿ drag cards · double-click to reset</p>
+    <p id="ripple-hint">✦ click anywhere for ripple ✦</p>
 
     <header class="header">
         <div class="logo">Sonu Ansari</div>
@@ -105,9 +184,11 @@
 
     <section class="hero">
 
-        <div class="hero-text">
+        <div class="hero-text draggable" id="drag-hero-text">
+            <div class="drag-handle"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+            <div class="status-badge"><span class="status-dot"></span>Available for Hire</div>
             <h1>Hi, I'm <span>Sonu Ansari</span></h1>
-            <h3 class="subtitle"></h3>
+            <h3 class="subtitle"><span id="typewriter-text"></span><span class="cursor-blink"></span></h3>
             <p>
                 I am a Java Full Stack Developer with 1.6 years of experience as an Assistant Programmer,
                 building scalable, secure, and high-performance web applications. Skilled in Java, Spring Boot,
@@ -115,20 +196,19 @@
                 architecture, efficient code, and seamless user experiences. Committed to writing maintainable
                 solutions that drive business value and long-term growth.
             </p>
-
             <div class="hero-buttons">
                 <a href="Sonu_Ansari_Resume.pdf" download class="btn primary">Download CV</a>
                 <a href="contact.html" class="btn secondary">Hire Me</a>
             </div>
-
             <div class="social-links">
                 <a href="https://www.linkedin.com/in/sonuansari/" target="_blank">LinkedIn</a>
                 <a href="https://github.com/SonuAnsari1998" target="_blank">GitHub</a>
-                <a href="mailto:786sonuansari123@gmail.com?subject=Hello%20Sonu&body=I%20want%20to%20contact%20you" target="_blank" rel="noopener noreferrer">Gmail</a>
+                <a href="/cdn-cgi/l/email-protection#f4c3ccc2879b9a81959a8795869dc5c6c7b49399959d98da979b99" target="_blank">Gmail</a>
             </div>
         </div>
 
-        <div class="hero-image">
+        <div class="hero-image draggable" id="drag-hero-image">
+            <div class="drag-handle"><span></span><span></span><span></span><span></span><span></span><span></span></div>
             <div class="image-wrapper">
                 <div class="orbit-wrap">
                     <div class="arc-ring arc-r1"><span class="arc-dot"></span></div>
@@ -149,6 +229,628 @@
     <div class="cursor-follower"></div>
     <div id="cursor-particles"></div>
 
-    <script src="script.js"></script>
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="script.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <script>
+    /* ============================================================
+       1. MATRIX RAIN BACKGROUND
+    ============================================================ */
+    (function(){
+        var canvas = document.getElementById('matrix-canvas');
+        var ctx    = canvas.getContext('2d');
+        var W, H, cols, drops;
+        var chars = 'ジズセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲンABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789{}[]<>/\\|@#';
+        var fontSize = 13;
+
+        function init(){
+            W = canvas.width  = window.innerWidth;
+            H = canvas.height = window.innerHeight;
+            cols  = Math.floor(W / fontSize);
+            drops = Array.from({length:cols}, function(){ return Math.random() * -80; });
+        }
+        init();
+        window.addEventListener('resize', init);
+
+        function draw(){
+            ctx.fillStyle = 'rgba(2,6,23,0.06)';
+            ctx.fillRect(0,0,W,H);
+            for(var i=0;i<cols;i++){
+                var ch = chars[Math.floor(Math.random()*chars.length)];
+                var y  = drops[i] * fontSize;
+                // Lead glyph — bright white-cyan
+                ctx.fillStyle = '#e0f7ff';
+                ctx.font = 'bold ' + fontSize + 'px monospace';
+                ctx.fillText(ch, i*fontSize, y);
+                // Trailing glyphs fade from cyan → purple
+                for(var t=1;t<8;t++){
+                    var a = 1 - t/8;
+                    ctx.fillStyle = t < 4
+                        ? 'rgba(56,189,248,'+(a*0.8)+')'
+                        : 'rgba(168,85,247,'+(a*0.5)+')';
+                    ctx.fillText(chars[Math.floor(Math.random()*chars.length)], i*fontSize, y - t*fontSize);
+                }
+                if(y > H && Math.random() > 0.975) drops[i] = 0;
+                drops[i] += 0.5;
+            }
+        }
+        setInterval(draw, 40);
+    })();
+
+    /* ============================================================
+       2. TYPEWRITER EFFECT
+    ============================================================ */
+    (function(){
+        var phrases = [
+            'Java Full Stack Developer',
+            'Spring Boot Specialist',
+            'Microservices Architect',
+            'ReactJS Enthusiast',
+            'Open to Opportunities 🚀'
+        ];
+        var el = document.getElementById('typewriter-text');
+        var pIdx = 0, cIdx = 0, deleting = false;
+        function type(){
+            var phrase = phrases[pIdx];
+            if(!deleting){
+                el.textContent = phrase.substring(0, cIdx+1);
+                cIdx++;
+                if(cIdx === phrase.length){ deleting=true; setTimeout(type,1800); return; }
+                setTimeout(type, 75);
+            } else {
+                el.textContent = phrase.substring(0, cIdx-1);
+                cIdx--;
+                if(cIdx === 0){ deleting=false; pIdx=(pIdx+1)%phrases.length; setTimeout(type,400); return; }
+                setTimeout(type, 38);
+            }
+        }
+        setTimeout(type, 1200);
+    })();
+
+    /* ============================================================
+       3. CUSTOM CURSOR + GLOWING PARTICLE TRAIL
+    ============================================================ */
+    var cur    = document.getElementById('custom-cursor');
+    var curDot = document.getElementById('custom-cursor-dot');
+    var trailLayer = document.getElementById('trail-layer');
+    var trailColors = ['#38bdf8','#a855f7','#f43f5e','#22d3ee','#818cf8','#f9a8d4'];
+    var lastTX = 0, lastTY = 0;
+
+    document.addEventListener('mousemove', function(e){
+        var x = e.clientX, y = e.clientY;
+        cur.style.left    = x + 'px';
+        cur.style.top     = y + 'px';
+        curDot.style.left = x + 'px';
+        curDot.style.top  = y + 'px';
+
+        // Spawn trail particle every 12px of movement
+        if(Math.hypot(x-lastTX, y-lastTY) > 12){
+            lastTX = x; lastTY = y;
+            var p   = document.createElement('div');
+            p.className = 'trail-particle';
+            var col  = trailColors[Math.floor(Math.random()*trailColors.length)];
+            var size = 3 + Math.random()*5;
+            var dur  = 0.4 + Math.random()*0.35;
+            p.style.cssText = 'left:'+x+'px;top:'+y+'px;width:'+size+'px;height:'+size+'px;background:'+col+';box-shadow:0 0 '+(size*2)+'px '+col+';animation-duration:'+dur+'s;';
+            trailLayer.appendChild(p);
+            setTimeout(function(){ if(p.parentNode) p.parentNode.removeChild(p); }, dur*1000+100);
+        }
+    });
+
+    document.addEventListener('click', function(e){
+        var tag = e.target.tagName.toLowerCase();
+        if(['input','textarea','button','a','select','label'].indexOf(tag) !== -1) return;
+        cur.classList.add('clicked');
+        // Burst 12 particles on click
+        for(var i=0;i<12;i++){
+            (function(){
+                var p = document.createElement('div');
+                p.className = 'trail-particle';
+                var col = trailColors[Math.floor(Math.random()*trailColors.length)];
+                var size = 4 + Math.random()*6;
+                var ox = (Math.random()-0.5)*40, oy = (Math.random()-0.5)*40;
+                p.style.cssText = 'left:'+(e.clientX+ox)+'px;top:'+(e.clientY+oy)+'px;width:'+size+'px;height:'+size+'px;background:'+col+';box-shadow:0 0 '+(size*2)+'px '+col+';animation-duration:0.5s;';
+                trailLayer.appendChild(p);
+                setTimeout(function(){ if(p.parentNode) p.parentNode.removeChild(p); }, 600);
+            })();
+        }
+        setTimeout(function(){ cur.classList.remove('clicked'); }, 300);
+    });
+
+    /* ============================================================
+       4. 3D TILT EFFECT ON CARDS
+    ============================================================ */
+    (function(){
+        var items = [
+            { id:'drag-hero-text',  str:12 },
+            { id:'drag-hero-image', str:18 }
+        ];
+        items.forEach(function(item){
+            var el = document.getElementById(item.id);
+            el.addEventListener('mousemove', function(e){
+                if(el.classList.contains('is-dragging')) return;
+                var r  = el.getBoundingClientRect();
+                var dx = (e.clientX - (r.left + r.width/2))  / (r.width/2);
+                var dy = (e.clientY - (r.top  + r.height/2)) / (r.height/2);
+                el.style.transition = 'transform 0.1s ease';
+                el.style.transform  = 'perspective(800px) rotateX('+(-dy*item.str)+'deg) rotateY('+(dx*item.str)+'deg) scale(1.02)';
+            });
+            el.addEventListener('mouseleave', function(){
+                if(el.classList.contains('is-dragging')) return;
+                el.style.transition = 'transform 0.5s ease';
+                el.style.transform  = 'perspective(800px) rotateX(0deg) rotateY(0deg) scale(1)';
+            });
+        });
+    })();
+
+    /* ============================================================
+       5. HEADER SCROLL
+    ============================================================ */
+    window.addEventListener('scroll', function(){
+        document.querySelector('.header').classList.toggle('scrolled', window.scrollY > 30);
+    });
+
+    /* ============================================================
+       6. DRAG & DROP SYSTEM
+    ============================================================ */
+    (function(){
+        var dragging=null, offsetX=0, offsetY=0, origParent=null, origNext=null, placeholder=null;
+
+        function nodrags(el){ return ['input','textarea','button','a','select','label'].indexOf(el.tagName.toLowerCase()) !== -1; }
+
+        function makeDraggable(el){
+            el.addEventListener('mousedown', function(e){
+                if(nodrags(e.target)) return;
+                e.preventDefault(); e.stopPropagation();
+                var rect = el.getBoundingClientRect();
+                offsetX = e.clientX - rect.left;
+                offsetY = e.clientY - rect.top;
+                origParent = el.parentNode; origNext = el.nextSibling;
+
+                placeholder = document.createElement('div');
+                placeholder.style.cssText = 'width:'+rect.width+'px;height:'+rect.height+'px;opacity:0.15;border:2px dashed rgba(56,189,248,0.35);border-radius:24px;flex-shrink:0;';
+                origParent.insertBefore(placeholder, origNext);
+
+                el.style.transform = 'none';
+                document.body.appendChild(el);
+                el.style.position   = 'fixed';
+                el.style.left       = (e.clientX - offsetX) + 'px';
+                el.style.top        = (e.clientY - offsetY) + 'px';
+                el.style.width      = rect.width + 'px';
+                el.style.zIndex     = '600';
+                el.style.margin     = '0';
+                el.style.boxShadow  = '0 24px 60px rgba(56,189,248,0.4),0 0 40px rgba(168,85,247,0.2)';
+                el.style.transform  = 'scale(1.03)';
+                el.classList.add('is-dragging');
+                cur.classList.remove('grab'); cur.classList.add('grabbing');
+                document.body.style.userSelect = 'none';
+                dragging = el;
+            });
+
+            el.addEventListener('dblclick', function(e){
+                if(nodrags(e.target)) return;
+                if(el.style.position === 'fixed'){
+                    ['position','left','top','width','zIndex','margin','transform','boxShadow','transition'].forEach(function(p){ el.style[p]=''; });
+                    el.classList.remove('is-dragging');
+                }
+            });
+
+            el.addEventListener('mouseenter', function(){ if(!dragging) cur.classList.add('grab'); });
+            el.addEventListener('mouseleave', function(){ cur.classList.remove('grab'); });
+        }
+
+        document.addEventListener('mousemove', function(e){
+            if(!dragging) return;
+            dragging.style.left = (e.clientX - offsetX) + 'px';
+            dragging.style.top  = (e.clientY - offsetY) + 'px';
+        });
+
+        document.addEventListener('mouseup', function(){
+            if(!dragging) return;
+            dragging.style.transform  = 'scale(1)';
+            dragging.style.boxShadow  = '0 8px 32px rgba(56,189,248,0.2)';
+            dragging.style.transition = 'transform 0.2s, box-shadow 0.3s';
+            if(placeholder && placeholder.parentNode) placeholder.parentNode.removeChild(placeholder);
+            placeholder = null;
+            dragging.classList.remove('is-dragging');
+            cur.classList.remove('grabbing');
+            document.body.style.userSelect = '';
+            dragging = null;
+        });
+
+        document.querySelectorAll('.draggable').forEach(makeDraggable);
+    })();
+
+    /* ============================================================
+       7. MEGA 3D BACKGROUND (Three.js — transparent so matrix shows)
+    ============================================================ */
+    (function(){
+        var W=window.innerWidth, H=window.innerHeight;
+        var canvas=document.getElementById('three-canvas');
+        var renderer=new THREE.WebGLRenderer({canvas:canvas,antialias:true,alpha:true});
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+        renderer.setSize(W,H);
+        renderer.setClearColor(0x000000,0);
+
+        var scene=new THREE.Scene(); scene.fog=new THREE.FogExp2(0x020617,0.022);
+        var camera=new THREE.PerspectiveCamera(65,W/H,0.1,500); camera.position.set(0,1,8);
+        var mouse={x:0,y:0}, camTarget={x:0,y:0};
+        document.addEventListener('mousemove',function(e){ mouse.x=(e.clientX/W-0.5)*2; mouse.y=(e.clientY/H-0.5)*2; });
+
+        /* GALAXY */
+        var gGeo=new THREE.BufferGeometry(), gPos=new Float32Array(12000*3), gCol=new Float32Array(12000*3);
+        var cI=new THREE.Color('#38bdf8'), cM=new THREE.Color('#a855f7'), cO=new THREE.Color('#f43f5e');
+        for(var i=0;i<12000;i++){
+            var i3=i*3,r=Math.pow(Math.random(),0.5)*14+0.3,ang=(i%4)*(Math.PI*2/4)+r*0.55;
+            gPos[i3]=Math.cos(ang)*r+(Math.random()-0.5)*0.38*r;
+            gPos[i3+1]=(Math.random()-0.5)*0.095;
+            gPos[i3+2]=Math.sin(ang)*r+(Math.random()-0.5)*0.38*r;
+            var t=r/14.3, c=t<0.5?cI.clone().lerp(cM,t*2):cM.clone().lerp(cO,(t-0.5)*2);
+            gCol[i3]=c.r; gCol[i3+1]=c.g; gCol[i3+2]=c.b;
+        }
+        gGeo.setAttribute('position',new THREE.BufferAttribute(gPos,3));
+        gGeo.setAttribute('color',new THREE.BufferAttribute(gCol,3));
+        var galaxy=new THREE.Points(gGeo,new THREE.PointsMaterial({size:0.06,vertexColors:true,transparent:true,opacity:0.9,depthWrite:false}));
+        galaxy.position.set(0,-4,-8); galaxy.rotation.x=0.25; scene.add(galaxy);
+
+        /* STARS */
+        var sGeo=new THREE.BufferGeometry(), sPos=new Float32Array(15000*3);
+        for(var s=0;s<15000*3;s++) sPos[s]=(Math.random()-0.5)*300;
+        sGeo.setAttribute('position',new THREE.BufferAttribute(sPos,3));
+        var stars=new THREE.Points(sGeo,new THREE.PointsMaterial({color:0xffffff,size:0.06,transparent:true,opacity:0.75}));
+        scene.add(stars);
+
+        /* CONSTELLATION */
+        var nPos=[];
+        for(var n=0;n<60;n++) nPos.push(new THREE.Vector3((Math.random()-0.5)*24,(Math.random()-0.5)*14,(Math.random()-0.5)*10-3));
+        var ndGeo=new THREE.BufferGeometry(), ndP=new Float32Array(180);
+        for(var nd=0;nd<60;nd++){ndP[nd*3]=nPos[nd].x;ndP[nd*3+1]=nPos[nd].y;ndP[nd*3+2]=nPos[nd].z;}
+        ndGeo.setAttribute('position',new THREE.BufferAttribute(ndP,3));
+        scene.add(new THREE.Points(ndGeo,new THREE.PointsMaterial({color:0x38bdf8,size:0.12,transparent:true,opacity:0.9})));
+        var lv=[];
+        for(var a=0;a<60;a++) for(var b=a+1;b<60;b++) if(nPos[a].distanceTo(nPos[b])<5.5){lv.push(nPos[a].x,nPos[a].y,nPos[a].z,nPos[b].x,nPos[b].y,nPos[b].z);}
+        var lGeo=new THREE.BufferGeometry();
+        lGeo.setAttribute('position',new THREE.BufferAttribute(new Float32Array(lv),3));
+        var constLines=new THREE.LineSegments(lGeo,new THREE.LineBasicMaterial({color:0x38bdf8,transparent:true,opacity:0.12}));
+        scene.add(constLines);
+
+        /* DNA */
+        var dnaGroup=new THREE.Group(), stA=[], stB=[], rungs=[];
+        for(var d=0;d<120;d++){
+            var dt=d/120,ang2=dt*Math.PI*8,yy=dt*10-5;
+            stA.push(new THREE.Vector3(Math.cos(ang2),yy,Math.sin(ang2)));
+            stB.push(new THREE.Vector3(Math.cos(ang2+Math.PI),yy,Math.sin(ang2+Math.PI)));
+            if(d%8===0) rungs.push([stA[stA.length-1],stB[stB.length-1]]);
+        }
+        function mkLine(pts,col){var g=new THREE.BufferGeometry().setFromPoints(pts);return new THREE.Line(g,new THREE.LineBasicMaterial({color:col,transparent:true,opacity:0.7}));}
+        dnaGroup.add(mkLine(stA,0x38bdf8)); dnaGroup.add(mkLine(stB,0xf43f5e));
+        rungs.forEach(function(r){
+            var rg=new THREE.BufferGeometry().setFromPoints(r);
+            dnaGroup.add(new THREE.Line(rg,new THREE.LineBasicMaterial({color:0xa855f7,transparent:true,opacity:0.5})));
+            [0,1].forEach(function(idx){var sp=new THREE.Mesh(new THREE.SphereGeometry(0.06,8,8),new THREE.MeshBasicMaterial({color:idx===0?0x38bdf8:0xf43f5e}));sp.position.copy(r[idx]);dnaGroup.add(sp);});
+        });
+        dnaGroup.position.set(-7,0,-2); scene.add(dnaGroup);
+
+        /* PORTAL */
+        var pGrp=new THREE.Group();
+        for(var ri=0;ri<18;ri++){
+            var t2=ri/18,rS=1.5-t2*0.9,rC=new THREE.Color().setHSL(0.55+t2*0.25,1,0.55);
+            var rm=new THREE.Mesh(new THREE.TorusGeometry(rS,0.015,8,60),new THREE.MeshBasicMaterial({color:rC,transparent:true,opacity:0.7-t2*0.4}));
+            rm.position.z=-t2*3.5; pGrp.add(rm);
+        }
+        pGrp.position.set(7,1,-3); scene.add(pGrp);
+
+        /* ══════════════════════════════════════════
+           WIREFRAME SHAPES — rendered on CSS canvas overlays
+           Each shape = a <canvas> element absolutely
+           positioned, drawn with 2D projected edges.
+           Mouse drag moves the canvas element directly
+           → true pixel-perfect drag feel.
+        ══════════════════════════════════════════ */
+
+        // Shape definitions: geometry type, size, color, start screen %
+        var SHAPE_DEFS = [
+            { type:'icosa',  size:90,  col:'#38bdf8', sx:48, sy:28, depth:-5 },
+            { type:'torus',  size:80,  col:'#a855f7', sx:78, sy:55, depth:-6 },
+            { type:'octa',   size:75,  col:'#f43f5e', sx:12, sy:50, depth:-5 },
+            { type:'dodeca', size:60,  col:'#22d3ee', sx:65, sy:72, depth:-4 },
+            { type:'icosa2', size:45,  col:'#818cf8', sx:28, sy:75, depth:-3 },
+            { type:'tetra',  size:65,  col:'#f9a8d4', sx:88, sy:20, depth:-4 }
+        ];
+
+        // Build 3D wireframe edge lists for each type
+        function buildEdges(type) {
+            var verts=[], edges=[];
+            if(type==='icosa'||type==='icosa2'){
+                var phi=(1+Math.sqrt(5))/2;
+                var v=[[-1,phi,0],[1,phi,0],[-1,-phi,0],[1,-phi,0],[0,-1,phi],[0,1,phi],[0,-1,-phi],[0,1,-phi],[phi,0,-1],[phi,0,1],[-phi,0,-1],[-phi,0,1]];
+                verts=v.map(function(p){var l=Math.sqrt(p[0]*p[0]+p[1]*p[1]+p[2]*p[2]);return[p[0]/l,p[1]/l,p[2]/l];});
+                edges=[[0,1],[0,5],[0,7],[0,10],[0,11],[1,5],[1,7],[1,8],[1,9],[2,3],[2,4],[2,6],[2,10],[2,11],[3,4],[3,6],[3,8],[3,9],[4,5],[4,9],[4,11],[5,9],[5,11],[6,7],[6,8],[6,10],[7,8],[7,10],[8,9],[10,11]];
+            } else if(type==='octa'){
+                verts=[[1,0,0],[-1,0,0],[0,1,0],[0,-1,0],[0,0,1],[0,0,-1]];
+                edges=[[0,2],[0,3],[0,4],[0,5],[1,2],[1,3],[1,4],[1,5],[2,4],[2,5],[3,4],[3,5]];
+            } else if(type==='tetra'){
+                var s=1/Math.sqrt(3);
+                verts=[[s,s,s],[s,-s,-s],[-s,s,-s],[-s,-s,s]];
+                edges=[[0,1],[0,2],[0,3],[1,2],[1,3],[2,3]];
+            } else if(type==='dodeca'){
+                var p=(1+Math.sqrt(5))/2, ip=1/p;
+                verts=[[1,1,1],[1,1,-1],[1,-1,1],[1,-1,-1],[-1,1,1],[-1,1,-1],[-1,-1,1],[-1,-1,-1],[0,ip,p],[0,ip,-p],[0,-ip,p],[0,-ip,-p],[ip,p,0],[ip,-p,0],[-ip,p,0],[-ip,-p,0],[p,0,ip],[p,0,-ip],[-p,0,ip],[-p,0,-ip]];
+                edges=[[0,8],[0,12],[0,16],[1,9],[1,12],[1,17],[2,10],[2,13],[2,16],[3,11],[3,13],[3,17],[4,8],[4,14],[4,18],[5,9],[5,14],[5,19],[6,10],[6,15],[6,18],[7,11],[7,15],[7,19],[8,10],[9,11],[12,14],[13,15],[16,17],[18,19]];
+            } else if(type==='torus'){
+                var R=1,r=0.35,segs=16,tube=12;
+                for(var ti=0;ti<segs;ti++) for(var tj=0;tj<tube;tj++){
+                    var a1=ti/segs*Math.PI*2, a2=tj/tube*Math.PI*2;
+                    verts.push([(R+r*Math.cos(a2))*Math.cos(a1),(R+r*Math.cos(a2))*Math.sin(a1),r*Math.sin(a2)]);
+                }
+                for(var ti2=0;ti2<segs;ti2++) for(var tj2=0;tj2<tube;tj2++){
+                    var ni=(ti2+1)%segs, nj=(tj2+1)%tube;
+                    edges.push([ti2*tube+tj2,ti2*tube+nj]);
+                    edges.push([ti2*tube+tj2,ni*tube+tj2]);
+                }
+            }
+            return {verts:verts, edges:edges};
+        }
+
+        // Create canvas overlays
+        var shapeLayer = document.createElement('div');
+        shapeLayer.style.cssText='position:fixed;inset:0;z-index:6;pointer-events:none;';
+        document.body.appendChild(shapeLayer);
+
+        var shapeObjs = SHAPE_DEFS.map(function(def, idx){
+            var cvs = document.createElement('canvas');
+            var sz  = def.size * 2 + 20;
+            cvs.width  = sz;
+            cvs.height = sz;
+            cvs.style.cssText = [
+                'position:fixed',
+                'left:'+(def.sx/100*window.innerWidth - sz/2)+'px',
+                'top:' +(def.sy/100*window.innerHeight- sz/2)+'px',
+                'width:'+sz+'px',
+                'height:'+sz+'px',
+                'pointer-events:auto',
+                'cursor:grab',
+                'z-index:6'
+            ].join(';');
+            shapeLayer.appendChild(cvs);
+
+            var geo = buildEdges(def.type);
+            return {
+                cvs:   cvs,
+                ctx:   cvs.getContext('2d'),
+                sz:    sz,
+                geo:   geo,
+                col:   def.col,
+                rotX:  0, rotY:0, rotZ:0,
+                vrotX: (Math.random()-0.5)*0.012,
+                vrotY: (Math.random()-0.5)*0.018,
+                vrotZ: (Math.random()-0.5)*0.006,
+                dragging: false,
+                ox:0, oy:0,
+                // physics
+                vx:0, vy:0,
+                hovered: false
+            };
+        });
+
+        // ── DRAG per shape canvas ──
+        shapeObjs.forEach(function(s){
+            var cvs = s.cvs;
+
+            cvs.addEventListener('mouseenter', function(){
+                s.hovered = true;
+                if(!s.dragging) {
+                    cur.classList.add('grab');
+                    cvs.style.cursor='grab';
+                }
+            });
+            cvs.addEventListener('mouseleave', function(){
+                s.hovered = false;
+                if(!s.dragging) cur.classList.remove('grab');
+            });
+
+            cvs.addEventListener('mousedown', function(e){
+                e.preventDefault();
+                e.stopPropagation();
+                s.dragging = true;
+                s.vx = 0; s.vy = 0;
+                var r = cvs.getBoundingClientRect();
+                s.ox = e.clientX - r.left - s.sz/2;
+                s.oy = e.clientY - r.top  - s.sz/2;
+                cvs.style.cursor='grabbing';
+                cur.classList.remove('grab');
+                cur.classList.add('grabbing');
+                // stop spin while dragging
+                s._savedVrotX = s.vrotX; s._savedVrotY = s.vrotY;
+                s.vrotX = 0; s.vrotY = 0;
+            });
+        });
+
+        // Global mouse tracking for drag
+        var _prevMx=0, _prevMy=0;
+        document.addEventListener('mousemove', function(e){
+            shapeObjs.forEach(function(s){
+                if(!s.dragging) return;
+                var cx = e.clientX - s.ox - s.sz/2;
+                var cy = e.clientY - s.oy - s.sz/2;
+                s.vx = e.clientX - _prevMx;
+                s.vy = e.clientY - _prevMy;
+                s.cvs.style.left = cx + 'px';
+                s.cvs.style.top  = cy + 'px';
+            });
+            _prevMx = e.clientX; _prevMy = e.clientY;
+        });
+
+        document.addEventListener('mouseup', function(){
+            shapeObjs.forEach(function(s){
+                if(!s.dragging) return;
+                s.dragging = false;
+                s.cvs.style.cursor='grab';
+                cur.classList.remove('grabbing');
+                if(s.hovered) cur.classList.add('grab');
+                // restore spin + add throw momentum
+                s.vrotX = s._savedVrotX + s.vy * 0.001;
+                s.vrotY = s._savedVrotY + s.vx * 0.001;
+            });
+        });
+
+        // ── Render each shape onto its canvas ──
+        function project(vx, vy, vz, rx, ry, rz, sz) {
+            // rotateX
+            var y1 = vy*Math.cos(rx) - vz*Math.sin(rx);
+            var z1 = vy*Math.sin(rx) + vz*Math.cos(rx);
+            // rotateY
+            var x2 = vx*Math.cos(ry) + z1*Math.sin(ry);
+            var z2 = -vx*Math.sin(ry) + z1*Math.cos(ry);
+            // rotateZ
+            var x3 = x2*Math.cos(rz) - y1*Math.sin(rz);
+            var y3 = x2*Math.sin(rz) + y1*Math.cos(rz);
+            // perspective
+            var fov = 3.5;
+            var scale = fov / (fov + z2 + 1);
+            return { x: x3*scale*(sz*0.38) + sz/2,
+                     y: -y3*scale*(sz*0.38) + sz/2,
+                     z: z2, scale: scale };
+        }
+
+        function drawShape(s) {
+            var ctx = s.ctx, sz = s.sz;
+            ctx.clearRect(0,0,sz,sz);
+
+            var pts = s.geo.verts.map(function(v){
+                return project(v[0],v[1],v[2], s.rotX,s.rotY,s.rotZ, sz);
+            });
+
+            // Sort edges back-to-front
+            var edgesZ = s.geo.edges.map(function(e){
+                return { e:e, z:(pts[e[0]].z+pts[e[1]].z)/2 };
+            });
+            edgesZ.sort(function(a,b){return a.z-b.z;});
+
+            edgesZ.forEach(function(item){
+                var a=pts[item.e[0]], b=pts[item.e[1]];
+                var depth = (item.z + 2) / 4; // 0..1
+                var alpha = s.hovered || s.dragging
+                    ? 0.5 + depth*0.5
+                    : 0.25 + depth*0.45;
+                var glow  = s.hovered || s.dragging ? 6 : 3;
+
+                ctx.beginPath();
+                ctx.moveTo(a.x, a.y);
+                ctx.lineTo(b.x, b.y);
+                ctx.strokeStyle = s.col;
+                ctx.globalAlpha = Math.min(alpha, 1);
+                ctx.lineWidth   = s.hovered || s.dragging ? 1.8 : 1.2;
+                ctx.shadowColor = s.col;
+                ctx.shadowBlur  = glow;
+                ctx.stroke();
+            });
+            ctx.globalAlpha = 1;
+            ctx.shadowBlur  = 0;
+        }
+
+        // Shapes animation (runs outside Three.js loop)
+        function animateShapes(){
+            requestAnimationFrame(animateShapes);
+            shapeObjs.forEach(function(s){
+                if(!s.dragging){
+                    s.rotX += s.vrotX;
+                    s.rotY += s.vrotY;
+                    s.rotZ += s.vrotZ;
+                    // gentle float
+                    var r = s.cvs.getBoundingClientRect();
+                    var cy = parseFloat(s.cvs.style.top) || r.top;
+                    s.cvs.style.top = (cy + Math.sin(Date.now()*0.0008 + s.rotY)*0.12) + 'px';
+                } else {
+                    // spin while dragging based on mouse velocity
+                    s.rotY += s.vx * 0.008;
+                    s.rotX += s.vy * 0.008;
+                }
+                drawShape(s);
+            });
+        }
+        animateShapes();
+
+        /* GRID + LIGHTS */
+        var grid=new THREE.GridHelper(60,60,0x1e3a5f,0x0c1a36);
+        grid.material.transparent=true; grid.material.opacity=0.25; grid.position.y=-5; scene.add(grid);
+        var pt1=new THREE.PointLight(0x38bdf8,3,25); scene.add(pt1);
+        var pt2=new THREE.PointLight(0xa855f7,3,25); scene.add(pt2);
+        var pt3=new THREE.PointLight(0xf43f5e,2,20); scene.add(pt3);
+        scene.add(new THREE.AmbientLight(0x1a1a2e,0.4));
+
+        /* CLICK RIPPLES */
+        var ripples=[];
+        function spawnRipple(wx,wy,wz){
+            var grp=new THREE.Group(); grp.position.set(wx,wy,wz); scene.add(grp);
+            var cols=[0x38bdf8,0xa855f7,0xf43f5e,0x22d3ee], rings=[];
+            for(var ri2=0;ri2<4;ri2++){
+                var rg=new THREE.Mesh(new THREE.TorusGeometry(0.01,0.02,8,40),new THREE.MeshBasicMaterial({color:cols[ri2],transparent:true,opacity:1,side:THREE.DoubleSide}));
+                rg.rotation.x=Math.PI*0.5; grp.add(rg); rings.push({mesh:rg,delay:ri2*0.06});
+            }
+            var bGeo=new THREE.BufferGeometry(), bP=new Float32Array(180);
+            for(var bi=0;bi<60;bi++){bP[bi*3]=(Math.random()-0.5)*0.1;bP[bi*3+1]=(Math.random()-0.5)*0.1;bP[bi*3+2]=(Math.random()-0.5)*0.1;}
+            bGeo.setAttribute('position',new THREE.BufferAttribute(bP,3));
+            var bM=new THREE.Points(bGeo,new THREE.PointsMaterial({color:0x38bdf8,size:0.08,transparent:true,opacity:1}));
+            grp.add(bM);
+            ripples.push({group:grp,rings:rings,burstMesh:bM,bPos:bP,life:0,maxLife:1.2});
+        }
+        var rc=new THREE.Raycaster(), cp=new THREE.Plane(new THREE.Vector3(0,0,1),0), ct=new THREE.Vector3();
+        document.addEventListener('click',function(e){
+            var tag=e.target.tagName.toLowerCase();
+            if(['input','textarea','button','a','select','label'].indexOf(tag)!==-1) return;
+            var ndc=new THREE.Vector2((e.clientX/W)*2-1,-(e.clientY/H)*2+1);
+            rc.setFromCamera(ndc,camera); rc.ray.intersectPlane(cp,ct);
+            spawnRipple(ct.x,ct.y,ct.z);
+        });
+
+        /* SKILL TAGS */
+        var skills=['Java','Spring Boot','React','Microservices','MySQL','REST API','Docker','Git','AWS','Redis','Kafka','Hibernate'];
+        var tagContainer=document.getElementById('skill-tags');
+        skills.forEach(function(sk,idx){
+            var el=document.createElement('div'); el.className='skill-tag'; el.textContent=sk;
+            var dur=14+Math.random()*10, del=idx*1.8;
+            el.style.left=(5+Math.random()*85)+'%'; el.style.bottom='-30px';
+            el.style.animationDuration=dur+'s'; el.style.animationDelay=del+'s';
+            tagContainer.appendChild(el);
+        });
+
+        /* ANIMATION LOOP */
+        var clock=new THREE.Clock();
+        function animate(){
+            requestAnimationFrame(animate);
+            var t=clock.getElapsedTime();
+            galaxy.rotation.y=t*0.03; stars.rotation.y=t*0.003;
+            constLines.material.opacity=0.08+Math.sin(t*0.7)*0.06;
+            dnaGroup.rotation.y=t*0.4; dnaGroup.position.y=Math.sin(t*0.5)*0.5;
+            pGrp.rotation.z=t*0.25; pGrp.rotation.y=t*0.1;
+            pGrp.children.forEach(function(ring,ri){ ring.rotation.z=t*(0.3+ri*0.05); ring.material.opacity=(0.4+Math.sin(t*1.5+ri*0.3)*0.3)*(1-ri/18); });
+            pt1.position.set(Math.sin(t*0.5)*7,2,Math.cos(t*0.5)*7);
+            pt2.position.set(Math.cos(t*0.4)*7,-1,Math.sin(t*0.4)*7);
+            pt3.position.set(Math.sin(t*0.6)*5,Math.cos(t)*3,-2);
+            grid.position.y=-5+Math.sin(t*0.3)*0.15;
+            ripples=ripples.filter(function(rp){
+                rp.life+=0.016; var prog=rp.life/rp.maxLife;
+                rp.rings.forEach(function(ring){var rp2=Math.max(0,prog-ring.delay/rp.maxLife);ring.mesh.scale.setScalar(1+rp2*12);ring.mesh.material.opacity=Math.max(0,1-rp2*1.2);});
+                var bArr=rp.burstMesh.geometry.attributes.position.array;
+                for(var bi=0;bi<bArr.length;bi+=3){bArr[bi]+=(Math.random()-0.5)*0.06*(1-prog);bArr[bi+1]+=(Math.random()-0.5)*0.06*(1-prog);bArr[bi+2]+=(Math.random()-0.5)*0.06*(1-prog);}
+                rp.burstMesh.geometry.attributes.position.needsUpdate=true;
+                rp.burstMesh.material.opacity=Math.max(0,1-prog);
+                if(prog>=1){scene.remove(rp.group);return false;} return true;
+            });
+            camTarget.x+=(mouse.x*1.2-camTarget.x)*0.05;
+            camTarget.y+=(-mouse.y*0.7-camTarget.y)*0.05;
+            camera.position.x=camTarget.x; camera.position.y=1+camTarget.y;
+            camera.lookAt(0,0,0);
+            renderer.render(scene,camera);
+        }
+        animate();
+
+        window.addEventListener('resize',function(){
+            W=window.innerWidth; H=window.innerHeight;
+            camera.aspect=W/H; camera.updateProjectionMatrix(); renderer.setSize(W,H);
+        });
+    })();
+    </script>
 </body>
 </html>
